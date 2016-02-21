@@ -1,0 +1,7 @@
+MACRO(LIST_ITEMS_PREPEND LIST PREFIX)
+    SET(tmp_list_)
+    FOREACH (item ${${LIST}})
+        LIST(APPEND tmp_list_ "${PREFIX}${item}")
+    ENDFOREACH (item)
+    SET(${LIST} ${tmp_list_})
+ENDMACRO(LIST_ITEMS_PREPEND)
