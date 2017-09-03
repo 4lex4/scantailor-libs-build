@@ -1,5 +1,5 @@
 FILE(
         WRITE "${TARGET_FILE}"
-        "bootstrap.bat mingw\n"
-        "b2 toolset=${TOOLSET}\n"
+        "bootstrap.bat ${TOOLSET}\n"
+        "b2 toolset=${TOOLSET} link=static threading=multi --build-type=complete stage\n"
 )
