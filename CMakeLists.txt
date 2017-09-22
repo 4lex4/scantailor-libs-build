@@ -265,92 +265,94 @@ ADD_CUSTOM_TARGET(
 
 #=================================== Qt ===================================#
 
-FILE(READ "${QT_DIR}/qtbase/mkspecs/win32-g++/qmake.conf" qmake_conf)
-STRING(REPLACE "QMAKE_CFLAGS_DEBUG      = -g" "QMAKE_CFLAGS_DEBUG      = -g -Wa,-mbig-obj" qmake_conf "${qmake_conf}")
-FILE(WRITE "${QT_DIR}/qtbase/mkspecs/win32-g++/qmake.conf" "${qmake_conf}")
-SET(qmake_conf "")
+IF(WIN32)
+    FILE(READ "${QT_DIR}/qtbase/mkspecs/win32-g++/qmake.conf" qmake_conf)
+    STRING(REPLACE "QMAKE_CFLAGS_DEBUG      = -g" "QMAKE_CFLAGS_DEBUG      = -g -Wa,-mbig-obj" qmake_conf "${qmake_conf}")
+    FILE(WRITE "${QT_DIR}/qtbase/mkspecs/win32-g++/qmake.conf" "${qmake_conf}")
+    SET(qmake_conf "")
 
-FILE(TO_NATIVE_PATH "${JPEG_DIR}" JPEG_INCLUDE_DIR)
-FILE(TO_NATIVE_PATH "${ZLIB_DIR}" ZLIB_INCLUDE_DIR)
-FILE(TO_NATIVE_PATH "${PNG_DIR}" PNG_INCLUDE_DIR)
-FILE(TO_NATIVE_PATH "${QT_DIR}" QT_DIR_NATIVE)
+    FILE(TO_NATIVE_PATH "${JPEG_DIR}" JPEG_INCLUDE_DIR)
+    FILE(TO_NATIVE_PATH "${ZLIB_DIR}" ZLIB_INCLUDE_DIR)
+    FILE(TO_NATIVE_PATH "${PNG_DIR}" PNG_INCLUDE_DIR)
+    FILE(TO_NATIVE_PATH "${QT_DIR}" QT_DIR_NATIVE)
 
-IF(MINGW)
-	SET(platform win32-g++)
-	SET(make_command "mingw32-make -j$ENV{NUMBER_OF_PROCESSORS}")
-ELSEIF(MSVC)
-	#MESSAGE("MSVC=${MSVC} | MSVC10=${MSVC10} | MSVC80=${MSVC80}" )
-	SET(make_command nmake)
-	IF(MSVC60 OR MSVC70)
-		MESSAGE(FATAL_ERROR "This Visual Studio version is too old and is not supported")
-	ELSEIF(MSVC71)
-		SET(platform win32-msvc2003)
-	ELSEIF(MSVC80)
-		SET(platform win32-msvc2005)
-		SET(force_frame_pointer TRUE)
-	ELSEIF(MSVC90)
-		SET(platform win32-msvc2008)
-		SET(force_frame_pointer TRUE)
-	ELSE()
-		# Visual Studio 2010 or above.
-		SET(platform win32-msvc2010)
-		SET(force_frame_pointer TRUE)
-	ENDIF()
-ELSE(MINGW)
-	MESSAGE(FATAL_ERROR "Unsupported platform.")
-ENDIF(MINGW)
+    IF(MINGW)
+        SET(platform win32-g++)
+        SET(make_command "mingw32-make -j$ENV{NUMBER_OF_PROCESSORS}")
+    ELSEIF(MSVC)
+        #MESSAGE("MSVC=${MSVC} | MSVC10=${MSVC10} | MSVC80=${MSVC80}" )
+        SET(make_command nmake)
+        IF(MSVC60 OR MSVC70)
+            MESSAGE(FATAL_ERROR "This Visual Studio version is too old and is not supported")
+        ELSEIF(MSVC71)
+            SET(platform win32-msvc2003)
+        ELSEIF(MSVC80)
+            SET(platform win32-msvc2005)
+            SET(force_frame_pointer TRUE)
+        ELSEIF(MSVC90)
+            SET(platform win32-msvc2008)
+            SET(force_frame_pointer TRUE)
+        ELSE()
+            # Visual Studio 2010 or above.
+            SET(platform win32-msvc2010)
+            SET(force_frame_pointer TRUE)
+        ENDIF()
+    ELSE(MINGW)
+        MESSAGE(FATAL_ERROR "Unsupported platform.")
+    ENDIF(MINGW)
 
-if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    SET(QT_BUILD_TYPE -debug)
-else()
-	SET(QT_BUILD_TYPE -release)
-endif()
+    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+        SET(QT_BUILD_TYPE -debug)
+    else()
+        SET(QT_BUILD_TYPE -release)
+    endif()
 
 
-SET(qt_build_script "${CMAKE_BINARY_DIR}/build-qt.bat")
+    SET(qt_build_script "${CMAKE_BINARY_DIR}/build-qt.bat")
 
-ADD_CUSTOM_COMMAND(
-        OUTPUT "${qt_build_script}"
-        COMMAND "${CMAKE_COMMAND}"
-        "-DTARGET_FILE=${qt_build_script}"
-		"-DPLATFORM=${platform}"
-		"-DBUILD_TYPE=${QT_BUILD_TYPE}"
-        "-DMAKE_COMMAND=${make_command}"
-        "-DJPEG_INCLUDE_DIR=${JPEG_INCLUDE_DIR}"
-        "-DZLIB_INCLUDE_DIR=${ZLIB_INCLUDE_DIR}"
-        "-DPNG_INCLUDE_DIR=${PNG_INCLUDE_DIR}"
-        "-DJPEG_LINK_DIR=$<TARGET_LINKER_FILE_DIR:${JPEG_LIBRARY_NAME}>"
-        "-DZLIB_LINK_DIR=$<TARGET_LINKER_FILE_DIR:${ZLIB_LIBRARY_NAME}>"
-        "-DPNG_LINK_DIR=$<TARGET_LINKER_FILE_DIR:${PNG_LIBRARY_NAME}>"
-        -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate_qt_build_script.cmake"
-        DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate_qt_build_script.cmake"
-        VERBATIM
-)
+    ADD_CUSTOM_COMMAND(
+            OUTPUT "${qt_build_script}"
+            COMMAND "${CMAKE_COMMAND}"
+            "-DTARGET_FILE=${qt_build_script}"
+            "-DPLATFORM=${platform}"
+            "-DBUILD_TYPE=${QT_BUILD_TYPE}"
+            "-DMAKE_COMMAND=${make_command}"
+            "-DJPEG_INCLUDE_DIR=${JPEG_INCLUDE_DIR}"
+            "-DZLIB_INCLUDE_DIR=${ZLIB_INCLUDE_DIR}"
+            "-DPNG_INCLUDE_DIR=${PNG_INCLUDE_DIR}"
+            "-DJPEG_LINK_DIR=$<TARGET_LINKER_FILE_DIR:${JPEG_LIBRARY_NAME}>"
+            "-DZLIB_LINK_DIR=$<TARGET_LINKER_FILE_DIR:${ZLIB_LIBRARY_NAME}>"
+            "-DPNG_LINK_DIR=$<TARGET_LINKER_FILE_DIR:${PNG_LIBRARY_NAME}>"
+            -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate_qt_build_script.cmake"
+            DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate_qt_build_script.cmake"
+            VERBATIM
+    )
 
-ADD_CUSTOM_TARGET(
-        Qt ALL
-        COMMAND "${qt_build_script}"
-        DEPENDS "${qt_build_script}"
-        WORKING_DIRECTORY "${QT_DIR}"
-)
+    ADD_CUSTOM_TARGET(
+            Qt ALL
+            COMMAND "${qt_build_script}"
+            DEPENDS "${qt_build_script}"
+            WORKING_DIRECTORY "${QT_DIR}"
+    )
 
-ADD_DEPENDENCIES(
-        Qt ${ZLIB_LIBRARY_NAME} ${JPEG_LIBRARY_NAME}
-        ${PNG_LIBRARY_NAME} ${TIFF_LIBRARY_NAME}
-)
+    ADD_DEPENDENCIES(
+            Qt ${ZLIB_LIBRARY_NAME} ${JPEG_LIBRARY_NAME}
+            ${PNG_LIBRARY_NAME} ${TIFF_LIBRARY_NAME}
+    )
 
-add_custom_command(
-            TARGET Qt
-            PRE_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:${JPEG_LIBRARY_NAME}>/$<TARGET_FILE_NAME:${JPEG_LIBRARY_NAME}>" "${QT_DIR}/qtbase/bin"
-)
-add_custom_command(
-            TARGET Qt
-            PRE_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:${ZLIB_LIBRARY_NAME}>/$<TARGET_FILE_NAME:${ZLIB_LIBRARY_NAME}>" "${QT_DIR}/qtbase/bin"
-)
-add_custom_command(
-            TARGET Qt
-            PRE_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:${PNG_LIBRARY_NAME}>/$<TARGET_FILE_NAME:${PNG_LIBRARY_NAME}>" "${QT_DIR}/qtbase/bin"
-)
+    add_custom_command(
+                TARGET Qt
+                PRE_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:${JPEG_LIBRARY_NAME}>/$<TARGET_FILE_NAME:${JPEG_LIBRARY_NAME}>" "${QT_DIR}/qtbase/bin"
+    )
+    add_custom_command(
+                TARGET Qt
+                PRE_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:${ZLIB_LIBRARY_NAME}>/$<TARGET_FILE_NAME:${ZLIB_LIBRARY_NAME}>" "${QT_DIR}/qtbase/bin"
+    )
+    add_custom_command(
+                TARGET Qt
+                PRE_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:${PNG_LIBRARY_NAME}>/$<TARGET_FILE_NAME:${PNG_LIBRARY_NAME}>" "${QT_DIR}/qtbase/bin"
+    )
+ENDIF(WIN32)
