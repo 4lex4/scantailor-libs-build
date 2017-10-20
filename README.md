@@ -63,7 +63,7 @@ Instructions
         |
     ~~~~ 
 7. Install mingw64 to the path `C:\mingw64` / `C:\mingw32`
-8. Install msys2 into the mingw folder.
+8. Install msys2 to the path `C:\msys64` / `C:\msys32`
 9. Add mingw64 to the `PATH` environment variable:
 
    a) go to: My Computer -> Right click -> Properties -> Advanced system settings;
@@ -73,7 +73,9 @@ Instructions
    c) Find `Path` variable in the system variables tab and paste
        `;C:\mingw64\bin` / `;C:\mingw32\bin` at the end of its value.
 10. Install CMake.
-11. Open the command prompt (`cmd`) and enter, 
+11. Run script `configure_msys.bat` with administrative permissions.
+12. Run script `configure_libs_x32.bat` / `configure_libs_x64.bat`
+13. Open the command prompt (`cmd`) and enter, 
     having `_Your_path_to_the_folder_` replaced with your folder containing the libs:
     ~~~~
     cd /d "_Your_path_to_the_folder_\libs\scantailor-libs-build-master"
@@ -90,7 +92,7 @@ Instructions
     ~~~~
     mingw32-make -j%NUMBER_OF_PROCESSORS%
     ~~~~
-12. Build scantailor.
+14. Build scantailor.
     Open the command prompt (`cmd`) and enter, 
     having `_Your_path_to_the_folder_\scantailor-advanced-1.x.x` replaced
     with your path to scantailor-advanced sources:
@@ -103,14 +105,14 @@ Instructions
     ~~~~
     mingw32-make -j%NUMBER_OF_PROCESSORS%
     ~~~~
-13. Create a folder `bin` in `...\scantailor-advanced-1.x.x\` and move there the files
+15. Create a folder `bin` in `...\scantailor-advanced-1.x.x\` and move there the files
 	`scantailor.exe`, `libjpeg.dll`, `libpng.dll`, `libtiff.dll` and `libz.dll`
     from `...\scantailor-advanced-1.x.x\build`
-14. Copy there the files either `libgcc_s_seh-1.dll` or `libgcc_s_sjlj-1.dll` or `libgcc_s_dw2-1.dll` (depending on your mingw-64 version),
+16. Copy there the files either `libgcc_s_seh-1.dll` or `libgcc_s_sjlj-1.dll` or `libgcc_s_dw2-1.dll` (depending on your mingw-64 version),
     `libstdc++-6.dll` and `libwinpthread-1.dll` from `C:\mingw64\bin`
-15. Copy there the files `Qt5Core.dll`, `Qt5Gui.dll`, `Qt5Network.dll`, `Qt5OpenGL.dll`, `Qt5Widgets.dll` and `Qt5Xml.dll` from
+17. Copy there the files `Qt5Core.dll`, `Qt5Gui.dll`, `Qt5Network.dll`, `Qt5OpenGL.dll`, `Qt5Widgets.dll` and `Qt5Xml.dll` from
     `...\libs\qt-everywhere-opensource-src-5.x.x\qtbase\bin`
-16. Create folder named `platforms` in the bin folder and copy there file `qwindows.dll` from
+18. Create folder named `platforms` in the bin folder and copy there file `qwindows.dll` from
     `...\libs\qt-everywhere-opensource-src-5.x.x\qtbase\plugins\platforms`
-17. Create folder named `imageformats` in the bin folder and copy there file `qjpeg.dll` from
+19. Create folder named `imageformats` in the bin folder and copy there file `qjpeg.dll` from
     `...\libs\qt-everywhere-opensource-src-5.x.x\qtbase\plugins\imageformats`

@@ -75,8 +75,6 @@ ENDIF ()
 
 #=================================== JPEG ===================================#
 
-configure_file(${JPEG_DIR}/jconfig.vc
-               ${JPEG_DIR}/jconfig.h)
 SET(
         libjpeg_sources
         jdct.h jerror.h jinclude.h jmemsys.h jmorecfg.h jpegint.h jpeglib.h jversion.h
@@ -90,6 +88,9 @@ SET(
         jmemmgr.c jmemname.c
         jquant1.c jquant2.c jutils.c 
 )
+
+LIST(APPEND libjpeg_sources jconfig.h)
+
 LIST_ITEMS_PREPEND(libjpeg_sources "${JPEG_DIR}/")
 
 ADD_LIBRARY(${JPEG_LIBRARY_NAME} SHARED ${libjpeg_sources})
@@ -116,6 +117,7 @@ SET(
         adler32.c compress.c crc32.c deflate.c inffast.c inflate.c
         inftrees.c trees.c uncompr.c zutil.c
 )
+
 LIST_ITEMS_PREPEND(zlib_sources "${ZLIB_DIR}/")
 
 ADD_LIBRARY(${ZLIB_LIBRARY_NAME} SHARED ${zlib_sources})
@@ -140,12 +142,16 @@ INCLUDE_DIRECTORIES(${ZLIB_DIR})
 
 configure_file(${PNG_DIR}/scripts/pnglibconf.h.prebuilt
                ${PNG_DIR}/pnglibconf.h)
+
 SET(
         libpng_sources
         png.c pngset.c pngget.c pngrutil.c pngtrans.c pngwutil.c pngread.c
         pngrio.c pngwio.c pngwrite.c pngrtran.c pngwtran.c pngmem.c
         pngerror.c pngpread.c
 )
+
+LIST(APPEND libpng_sources config.h)
+
 LIST_ITEMS_PREPEND(libpng_sources "${PNG_DIR}/")
 
 ADD_LIBRARY(${PNG_LIBRARY_NAME} SHARED ${libpng_sources})
@@ -167,35 +173,8 @@ SET_TARGET_PROPERTIES(
 
 #=================================== TIFF ===================================#
 
-
 INCLUDE_DIRECTORIES("${JPEG_DIR}") # ZLIB_DIR already included above
-
-configure_file(${TIFF_DIR}/libtiff/tif_config.vc.h
-               ${TIFF_DIR}/libtiff/tif_config.h
-               @ONLY)
-configure_file(${TIFF_DIR}/libtiff/tiffconf.vc.h
-               ${TIFF_DIR}/libtiff/tiffconf.h
-               @ONLY)
-			   
-IF(MINGW)
-	FILE(READ "${TIFF_DIR}/libtiff/tif_config.h" tif_config_h)
-	FILE(READ "${TIFF_DIR}/libtiff/tiffconf.h" tiffconf_h)
-	FILE(READ "${TIFF_DIR}/libtiff/tiffiop.h" tiffiop_h)
-	STRING(REPLACE "__int64" "long long" tif_config_h "${tif_config_h}")
-	STRING(REPLACE "__int64" "long long" tiffconf_h "${tiffconf_h}")
 	
-	STRING(REPLACE "snprintf" "dummy" tif_config_h "${tif_config_h}")
-	STRING(REPLACE "snprintf" "dummy" tiffiop_h "${tiffiop_h}")
-	
-	FILE(WRITE "${TIFF_DIR}/libtiff/tif_config.h" "${tif_config_h}")
-	FILE(WRITE "${TIFF_DIR}/libtiff/tiffconf.h" "${tiffconf_h}")
-	FILE(WRITE "${TIFF_DIR}/libtiff/tiffiop.h" "${tiffiop_h}")
-	
-	SET(tif_config_h "")
-	SET(tiffconf_h "")
-	SET(tiffiop_h "")
-ENDIF()
-
 SET(
         libtiff_sources
 		tiff.h tiffio.h tiffvers.h
@@ -213,6 +192,8 @@ if(WIN32_IO)
 else()
   list(APPEND libtiff_sources tif_unix.c)
 endif()
+
+LIST(APPEND libtiff_sources tif_config.h tiffconf.h)
 
 LIST_ITEMS_PREPEND(libtiff_sources "${TIFF_DIR}/libtiff/")
 
