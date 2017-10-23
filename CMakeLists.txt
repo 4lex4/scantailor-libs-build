@@ -4,11 +4,31 @@ PROJECT("libs build")
 
 INCLUDE(cmake/SetDefaultBuildType.cmake)
 INCLUDE(cmake/ListItemsPrepend.cmake)
+INCLUDE(cmake/ToNativePath.cmake)
 
-IF (CMAKE_COMPILER_IS_GNUCC AND CMAKE_COMPILER_IS_GNUCXX)
+# setting compiler flags
+IF (MINGW)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
-	set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "-static-libgcc -static-libstdc++")
 ENDIF ()
+
+IF (MSVC AND WIN_XP)
+	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /D_USING_V110_SDK71_")
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_USING_V110_SDK71_")
+	SET(CMAKE_EXE_LINKER_FLAGS "/SUBSYSTEM:CONSOLE,5.01 /SUBSYSTEM:WINDOWS,5.01 ${CMAKE_EXE_LINKER_FLAGS}")
+ENDIF ()
+
+SET(
+	CMAKE_C_FLAGS "${CMAKE_C_FLAGS}"
+	CACHE STRING "Common C flags for all build configurations." FORCE
+)
+SET(
+	CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}"
+	CACHE STRING "Common C++ flags for all build configurations." FORCE
+)
+SET(
+	CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}"
+	CACHE STRING "Common link flags for all build configurations." FORCE
+)
 
 ST_SET_DEFAULT_BUILD_TYPE(Release)
 
@@ -75,6 +95,28 @@ ENDIF ()
 
 #=================================== JPEG ===================================#
 
+IF (MSVC AND (NOT EXISTS "${JPEG_DIR}/jmorecfg.h.orig"))
+	# Patch jmorecfg.h to:
+	# 1. Prevent double definition of INT32.
+	# 2. Build a DLL rather than a static library.
+	FILE(READ "${JPEG_DIR}/jmorecfg.h" jmorecfg_h_orig)
+	STRING(REPLACE "XMD_H" "_BASETSD_H" jmorecfg_h "${jmorecfg_h_orig}")
+	STRING(
+		REGEX REPLACE "#define[ \t]+GLOBAL\\(type\\)[^\n]*"
+		"#ifdef JPEG_BUILD\n#define GLOBAL(type) __declspec(dllexport) type\n#else\n#define GLOBAL(type) __declspec(dllimport) type\n#endif"
+		jmorecfg_h "${jmorecfg_h}"
+	)
+	STRING(
+		REGEX REPLACE "#define[ \t]+EXTERN\\(type\\)[^\n]*"
+		"#ifdef JPEG_BUILD\n#define EXTERN(type) extern __declspec(dllexport) type\n#else\n#define EXTERN(type) extern __declspec(dllimport) type\n#endif"
+		jmorecfg_h "${jmorecfg_h}"
+	)
+	FILE(WRITE "${JPEG_DIR}/jmorecfg.h" "${jmorecfg_h}")
+	FILE(WRITE "${JPEG_DIR}/jmorecfg.h.orig" "${jmorecfg_h_orig}")
+	SET(jmorecfg_h "")
+	SET(jmorecfg_h_orig "")
+ENDIF ()
+
 SET(
         libjpeg_sources
         jdct.h jerror.h jinclude.h jmemsys.h jmorecfg.h jpegint.h jpeglib.h jversion.h
@@ -89,7 +131,12 @@ SET(
         jquant1.c jquant2.c jutils.c 
 )
 
-LIST(APPEND libjpeg_sources jconfig.h)
+IF(MSVC)
+    CONFIGURE_FILE("${JPEG_DIR}/jconfig.vc" "${JPEG_DIR}/jconfig.h" COPYONLY)
+ENDIF (MSVC)
+IF (MINGW)
+    LIST(APPEND libjpeg_sources jconfig.h)
+ENDIF (MINGW)
 
 LIST_ITEMS_PREPEND(libjpeg_sources "${JPEG_DIR}/")
 
@@ -140,8 +187,10 @@ SET_TARGET_PROPERTIES(
 
 INCLUDE_DIRECTORIES(${ZLIB_DIR})
 
-configure_file(${PNG_DIR}/scripts/pnglibconf.h.prebuilt
-               ${PNG_DIR}/pnglibconf.h)
+CONFIGURE_FILE(
+	"${PNG_DIR}/scripts/pnglibconf.h.prebuilt"
+	"${PNG_DIR}/pnglibconf.h" COPYONLY
+)
 
 SET(
         libpng_sources
@@ -150,8 +199,10 @@ SET(
         pngerror.c pngpread.c
 )
 
-LIST(APPEND libpng_sources config.h)
-
+IF (MINGW)
+	LIST(APPEND libpng_sources config.h)
+ENDIF (MINGW)
+	
 LIST_ITEMS_PREPEND(libpng_sources "${PNG_DIR}/")
 
 ADD_LIBRARY(${PNG_LIBRARY_NAME} SHARED ${libpng_sources})
@@ -193,7 +244,22 @@ else()
   list(APPEND libtiff_sources tif_unix.c)
 endif()
 
-LIST(APPEND libtiff_sources tif_config.h tiffconf.h)
+IF(MSVC)
+	SET(tiff_vc_config "${TIFF_DIR}/libtiff/tif_config.vc.h")
+	IF(EXISTS "${TIFF_DIR}/libtiff/tif_config.h.vc")
+		SET(tiff_vc_config "${TIFF_DIR}/libtiff/tif_config.h.vc")
+	ENDIF(EXISTS "${TIFF_DIR}/libtiff/tif_config.h.vc")
+	CONFIGURE_FILE(
+		"${tiff_vc_config}" "${TIFF_DIR}/libtiff/tif_config.h" COPYONLY
+	)
+	CONFIGURE_FILE(
+		"${TIFF_DIR}/libtiff/tiffconf.vc.h"
+		"${TIFF_DIR}/libtiff/tiffconf.h" COPYONLY
+	)
+ENDIF (MSVC)
+IF (MINGW)
+    LIST(APPEND libtiff_sources tif_config.h tiffconf.h)
+ENDIF (MINGW)
 
 LIST_ITEMS_PREPEND(libtiff_sources "${TIFF_DIR}/libtiff/")
 
@@ -217,10 +283,14 @@ SET_TARGET_PROPERTIES(
 
 #================================= Boost ================================#
 
+SET(extra_params "")
 IF(MINGW)
 	SET(boost_toolset gcc)
 ELSEIF(MSVC)
 	SET(boost_toolset msvc)
+	IF(WIN_XP)
+		SET(extra_params "define=_USING_V110_SDK71_ define=BOOST_USE_WINAPI_VERSION=0x0501")
+	ENDIF()
 ELSE(MINGW)
 	MESSAGE(FATAL_ERROR "Unsupported platform. MinGW and MSVC are only supported.")
 ENDIF(MINGW)
@@ -232,6 +302,7 @@ ADD_CUSTOM_COMMAND(
         COMMAND "${CMAKE_COMMAND}"
         "-DTARGET_FILE=${boost_build_script}"
 		"-DTOOLSET=${boost_toolset}"
+		"-DEXTRA_PARAMS=${extra_params}"
         -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate_boost_build_script.cmake"
         DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate_boost_build_script.cmake"
         VERBATIM
@@ -246,94 +317,110 @@ ADD_CUSTOM_TARGET(
 
 #=================================== Qt ===================================#
 
-IF(WIN32)
-    FILE(READ "${QT_DIR}/qtbase/mkspecs/win32-g++/qmake.conf" qmake_conf)
-    STRING(REPLACE "QMAKE_CFLAGS_DEBUG      = -g" "QMAKE_CFLAGS_DEBUG      = -g -Wa,-mbig-obj" qmake_conf "${qmake_conf}")
-    FILE(WRITE "${QT_DIR}/qtbase/mkspecs/win32-g++/qmake.conf" "${qmake_conf}")
-    SET(qmake_conf "")
+FILE(TO_NATIVE_PATH "${JPEG_DIR}" JPEG_INCLUDE_DIR)
+FILE(TO_NATIVE_PATH "${ZLIB_DIR}" ZLIB_INCLUDE_DIR)
+FILE(TO_NATIVE_PATH "${PNG_DIR}" PNG_INCLUDE_DIR)
+FILE(TO_NATIVE_PATH "${QT_DIR}" QT_DIR_NATIVE)
 
-    FILE(TO_NATIVE_PATH "${JPEG_DIR}" JPEG_INCLUDE_DIR)
-    FILE(TO_NATIVE_PATH "${ZLIB_DIR}" ZLIB_INCLUDE_DIR)
-    FILE(TO_NATIVE_PATH "${PNG_DIR}" PNG_INCLUDE_DIR)
-    FILE(TO_NATIVE_PATH "${QT_DIR}" QT_DIR_NATIVE)
+SET(QTBASE_DIR "${QT_DIR}/qtbase")
 
-    IF(MINGW)
-        SET(platform win32-g++)
-        SET(make_command "mingw32-make -j$ENV{NUMBER_OF_PROCESSORS}")
-    ELSEIF(MSVC)
-        #MESSAGE("MSVC=${MSVC} | MSVC10=${MSVC10} | MSVC80=${MSVC80}" )
-        SET(make_command nmake)
-        IF(MSVC60 OR MSVC70)
-            MESSAGE(FATAL_ERROR "This Visual Studio version is too old and is not supported")
-        ELSEIF(MSVC71)
-            SET(platform win32-msvc2003)
-        ELSEIF(MSVC80)
-            SET(platform win32-msvc2005)
-            SET(force_frame_pointer TRUE)
-        ELSEIF(MSVC90)
-            SET(platform win32-msvc2008)
-            SET(force_frame_pointer TRUE)
-        ELSE()
-            # Visual Studio 2010 or above.
-            SET(platform win32-msvc2010)
-            SET(force_frame_pointer TRUE)
-        ENDIF()
-    ELSE(MINGW)
-        MESSAGE(FATAL_ERROR "Unsupported platform.")
-    ENDIF(MINGW)
+IF(MSVC)
+	# Find all *.conf files under mkspecs that mention -Zc:wchar_t- and remove
+	# that minus at the end.  That's necessary to make Qt compatible with other
+	# libraries that use wchar_t stuff.
+	FILE(GLOB_RECURSE conf_files "${QTBASE_DIR}/mkspecs/*.conf")
+	FOREACH(conf_file ${conf_files})
+		IF(NOT EXISTS "${conf_file}.orig")
+			FILE(READ "${conf_file}" contents)
+			STRING(REGEX REPLACE "-Zc:wchar_t-" "-Zc:wchar_t" new_contents "${contents}")
+			IF(NOT "${contents}" STREQUAL "${new_contents}")
+				# Make a backup copy
+				CONFIGURE_FILE("${conf_file}" "${conf_file}.orig" COPYONLY)
+				FILE(WRITE "${conf_file}" "${new_contents}")
+			ENDIF()
+		ENDIF()
+	ENDFOREACH()
+ENDIF(MSVC)
 
-    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-        SET(QT_BUILD_TYPE -debug)
-    else()
-        SET(QT_BUILD_TYPE -release)
-    endif()
+IF(MINGW)
+	SET(platform win32-g++)
+	SET(make_command "mingw32-make -j$ENV{NUMBER_OF_PROCESSORS}")
+ELSEIF(MSVC)
+	FIND_PROGRAM(JOM_EXECUTABLE jom HINTS "${source_outer_dir}")
+	IF(JOM_EXECUTABLE)
+		TO_NATIVE_PATH("${JOM_EXECUTABLE}" make_command)
+		SET(make_command "${make_command} -j $ENV{NUMBER_OF_PROCESSORS}")
+	ELSE()
+		SET(make_command nmake)
+		MESSAGE(STATUS "Note that building Qt with NMAKE is slow. Consider using JOM instead. \
+		Drop jom.exe to the folder with other dependencies and/or set JOM_EXECUTABLE to point to it.")
+	ENDIF()
+	
+	SET(platform win32-msvc)
+	
+	# Qt 5.6.3 is the latest version that supports Win XP
+	IF(WIN_XP)
+		SET(platform win32-msvc2017)
+	ENDIF()
+ELSE(MINGW)
+	MESSAGE(FATAL_ERROR "Unsupported platform.")
+ENDIF(MINGW)
+
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+	SET(QT_BUILD_TYPE -debug)
+else()
+	SET(QT_BUILD_TYPE -release)
+endif()
 
 
-    SET(qt_build_script "${CMAKE_BINARY_DIR}/build-qt.bat")
+SET(qt_build_script "${CMAKE_BINARY_DIR}/build-qt.bat")
+SET(qt_build_script_dependency "${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate_qt_build_script.cmake")
+IF (WIN_XP)
+	SET(qt_build_script_dependency "${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate_qt_build_script_xp.cmake")
+ENDIF()
 
-    ADD_CUSTOM_COMMAND(
-            OUTPUT "${qt_build_script}"
-            COMMAND "${CMAKE_COMMAND}"
-            "-DTARGET_FILE=${qt_build_script}"
-            "-DPLATFORM=${platform}"
-            "-DBUILD_TYPE=${QT_BUILD_TYPE}"
-            "-DMAKE_COMMAND=${make_command}"
-            "-DJPEG_INCLUDE_DIR=${JPEG_INCLUDE_DIR}"
-            "-DZLIB_INCLUDE_DIR=${ZLIB_INCLUDE_DIR}"
-            "-DPNG_INCLUDE_DIR=${PNG_INCLUDE_DIR}"
-            "-DJPEG_LINK_DIR=$<TARGET_LINKER_FILE_DIR:${JPEG_LIBRARY_NAME}>"
-            "-DZLIB_LINK_DIR=$<TARGET_LINKER_FILE_DIR:${ZLIB_LIBRARY_NAME}>"
-            "-DPNG_LINK_DIR=$<TARGET_LINKER_FILE_DIR:${PNG_LIBRARY_NAME}>"
-            -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate_qt_build_script.cmake"
-            DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate_qt_build_script.cmake"
-            VERBATIM
-    )
+ADD_CUSTOM_COMMAND(
+		OUTPUT "${qt_build_script}"
+		COMMAND "${CMAKE_COMMAND}"
+		"-DTARGET_FILE=${qt_build_script}"
+		"-DPLATFORM=${platform}"
+		"-DBUILD_TYPE=${QT_BUILD_TYPE}"
+		"-DMAKE_COMMAND=${make_command}"
+		"-DJPEG_INCLUDE_DIR=${JPEG_INCLUDE_DIR}"
+		"-DZLIB_INCLUDE_DIR=${ZLIB_INCLUDE_DIR}"
+		"-DPNG_INCLUDE_DIR=${PNG_INCLUDE_DIR}"
+		"-DJPEG_LINK_DIR=$<TARGET_LINKER_FILE_DIR:${JPEG_LIBRARY_NAME}>"
+		"-DZLIB_LINK_DIR=$<TARGET_LINKER_FILE_DIR:${ZLIB_LIBRARY_NAME}>"
+		"-DPNG_LINK_DIR=$<TARGET_LINKER_FILE_DIR:${PNG_LIBRARY_NAME}>"
+		-P "${qt_build_script_dependency}"
+		DEPENDS "${qt_build_script_dependency}"
+		VERBATIM
+)
 
-    ADD_CUSTOM_TARGET(
-            Qt ALL
-            COMMAND "${qt_build_script}"
-            DEPENDS "${qt_build_script}"
-            WORKING_DIRECTORY "${QT_DIR}"
-    )
+ADD_CUSTOM_TARGET(
+		Qt ALL
+		COMMAND "${qt_build_script}"
+		DEPENDS "${qt_build_script}"
+		WORKING_DIRECTORY "${QT_DIR}"
+)
 
-    ADD_DEPENDENCIES(
-            Qt ${ZLIB_LIBRARY_NAME} ${JPEG_LIBRARY_NAME}
-            ${PNG_LIBRARY_NAME} ${TIFF_LIBRARY_NAME}
-    )
+ADD_DEPENDENCIES(
+		Qt ${ZLIB_LIBRARY_NAME} ${JPEG_LIBRARY_NAME}
+		${PNG_LIBRARY_NAME} ${TIFF_LIBRARY_NAME}
+)
 
-    add_custom_command(
-                TARGET Qt
-                PRE_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:${JPEG_LIBRARY_NAME}>/$<TARGET_FILE_NAME:${JPEG_LIBRARY_NAME}>" "${QT_DIR}/qtbase/bin"
-    )
-    add_custom_command(
-                TARGET Qt
-                PRE_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:${ZLIB_LIBRARY_NAME}>/$<TARGET_FILE_NAME:${ZLIB_LIBRARY_NAME}>" "${QT_DIR}/qtbase/bin"
-    )
-    add_custom_command(
-                TARGET Qt
-                PRE_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:${PNG_LIBRARY_NAME}>/$<TARGET_FILE_NAME:${PNG_LIBRARY_NAME}>" "${QT_DIR}/qtbase/bin"
-    )
-ENDIF(WIN32)
+add_custom_command(
+			TARGET Qt
+			PRE_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:${JPEG_LIBRARY_NAME}>/$<TARGET_FILE_NAME:${JPEG_LIBRARY_NAME}>" "${QT_DIR}/qtbase/bin"
+)
+add_custom_command(
+			TARGET Qt
+			PRE_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:${ZLIB_LIBRARY_NAME}>/$<TARGET_FILE_NAME:${ZLIB_LIBRARY_NAME}>" "${QT_DIR}/qtbase/bin"
+)
+add_custom_command(
+			TARGET Qt
+			PRE_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:${PNG_LIBRARY_NAME}>/$<TARGET_FILE_NAME:${PNG_LIBRARY_NAME}>" "${QT_DIR}/qtbase/bin"
+)
