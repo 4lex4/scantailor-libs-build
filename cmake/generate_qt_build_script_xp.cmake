@@ -11,7 +11,7 @@ FILE(
 		" -skip qtsensors -skip qtserialbus -skip qtserialport"
 		" -skip qtsvg -skip qtwayland"
 		" -skip qtwebchannel -skip qtwebengine -skip qtwebsockets -skip qtwebview"
-		" -skip qtwinextras -skip qtx11extras -skip qtxmlpatterns"
+		" -skip qtx11extras -skip qtxmlpatterns"
         " -nomake examples -nomake tests"
         " -opensource -confirm-license -no-ltcg"
         " -I \"${JPEG_INCLUDE_DIR}\" -I \"${ZLIB_INCLUDE_DIR}\""
