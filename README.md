@@ -7,9 +7,10 @@ This is a build dependencies project for Scan Tailor Advanced on **Windows**.
 
 Supported toolchains are MinGW and MSVC.
 
-**Linux** users need not clone this as they can just download cmake [CMake](#instruments) and [dependencies](#dependencies),  
-and then [build them from the sources directly](#linux-building-from-sources).
- 
+**Linux** users have two options:
+1. Just download cmake [CMake](#instruments) and [dependencies](#dependencies) devel (dev) packages from the repository and
+   then [build scantailor](#build_scantailor_linux);
+2. Or [build the dependencies from the sources directly](#linux-building-from-sources).
 
 #### <u>Contents</u>:
 * [Dependencies](#dependencies)
@@ -24,7 +25,7 @@ Download the <u>sources</u> of:
 1. [Boost 1.x.x](http://www.boost.org/)
 2. [libpng 1.x.x](https://sourceforge.net/projects/libpng/files/)
 3. [zlib 1.x.x](https://sourceforge.net/projects/libpng/files/zlib/)
-4. [jpeg v9x](http://ijg.org/)
+4. [jpeg 9](http://www.ijg.org/files/)
 5. [libtiff 4.x.x](http://www.simplesystems.org/libtiff/)
 6. [Qt 5.x.x](https://www1.qt.io/download-open-source/) (the <u>source package</u> only! Note: Qt 5.6.x is the latest versions that support WinXP.)
 
@@ -64,7 +65,7 @@ Instructions
          |
          |--libs
          |   |--boost_1_xx_x
-         |   |--jpeg-9x
+         |   |--jpeg-9
          |   |--libpng-1.x.xx
          |   |--scantailor-libs-build-master
          |   |--jpeg-9x
@@ -242,7 +243,8 @@ Firstly make sure that [CMake](#instruments), gcc and g++ are installed.
  ./b2 -q --with-test toolset=gcc link=shared threading=multi install
  ~~~~
 
-6. Build scantailor
+
+6. Build scantailor <a name="build_scantailor_linux"></a>
 
  ~~~~
  cd "_Your_path_\scantailor-advanced-1.x.x"

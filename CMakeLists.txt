@@ -281,6 +281,21 @@ SET_TARGET_PROPERTIES(
 		DEBUG_POSTFIX "d"
 )
 
+target_compile_definitions(${TIFF_LIBRARY_NAME} PRIVATE CCITT_SUPPORT=1
+                                                        PACKBITS_SUPPORT=1
+                                                        LZW_SUPPORT=1
+                                                        THUNDER_SUPPORT=1
+                                                        NEXT_SUPPORT=1
+                                                        LOGLUV_SUPPORT=1
+                                                        MDI_SUPPORT=1 # tries to open MS MDI as Tiff
+                                                        ZIP_SUPPORT=1
+                                                        PIXARLOG_SUPPORT=1
+                                                        JPEG_SUPPORT=1
+                                                        OJPEG_SUPPORT=1
+                                                        #JBIG_SUPPORT=1
+                                                        #LZMA_SUPPORT=1
+														)
+
 #================================= Boost ================================#
 
 SET(extra_params "")
