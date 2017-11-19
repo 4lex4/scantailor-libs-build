@@ -118,17 +118,15 @@ IF (MSVC AND (NOT EXISTS "${JPEG_DIR}/jmorecfg.h.orig"))
 ENDIF ()
 
 SET(
-        libjpeg_sources
-        jdct.h jerror.h jinclude.h jmemsys.h jmorecfg.h jpegint.h jpeglib.h jversion.h
-        jaricom.c jcapimin.c jcapistd.c jcarith.c jccoefct.c jccolor.c
-        jcdctmgr.c jchuff.c jcinit.c jcmainct.c jcmarker.c jcmaster.c
-        jcomapi.c jcparam.c jcprepct.c jcsample.c jctrans.c jdapimin.c
-        jdapistd.c jdarith.c jdatadst.c jdatasrc.c jdcoefct.c jdcolor.c
-        jddctmgr.c jdhuff.c jdinput.c jdmainct.c jdmarker.c jdmaster.c
-        jdmerge.c jdpostct.c jdsample.c jdtrans.c jerror.c jfdctflt.c
-        jfdctfst.c jfdctint.c jidctflt.c jidctfst.c jidctint.c
-        jmemmgr.c jmemname.c
-        jquant1.c jquant2.c jutils.c 
+	libjpeg_sources
+	jaricom.c jcapimin.c jcapistd.c jcarith.c jccoefct.c jccolor.c
+	jcdctmgr.c jchuff.c jcinit.c jcmainct.c jcmarker.c jcmaster.c
+	jcomapi.c jcparam.c jcprepct.c jcsample.c jctrans.c jdapimin.c
+	jdapistd.c jdarith.c jdatadst.c jdatasrc.c jdcoefct.c jdcolor.c
+	jddctmgr.c jdhuff.c jdinput.c jdmainct.c jdmarker.c jdmaster.c
+	jdmerge.c jdpostct.c jdsample.c jdtrans.c jerror.c jfdctflt.c
+	jfdctfst.c jfdctint.c jidctflt.c jidctfst.c jidctint.c jquant1.c
+	jquant2.c jutils.c jmemmgr.c jmemnobs.c
 )
 
 IF(MSVC)
@@ -152,7 +150,6 @@ SET_TARGET_PROPERTIES(
         RUNTIME_OUTPUT_DIRECTORY_RELEASE "${JPEG_DIR}/bin"
         RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${JPEG_DIR}/bin"
         RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "${JPEG_DIR}/bin"
-        LINKER_LANGUAGE CXX
 		DEBUG_POSTFIX "d"
 )
 
