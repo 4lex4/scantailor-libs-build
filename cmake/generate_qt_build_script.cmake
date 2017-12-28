@@ -5,7 +5,7 @@ FILE(
         " -system-zlib -system-libpng -system-libjpeg"
 		" -skip qt3d -skip qtactiveqt -skip qtandroidextras -skip qtcanvas3d"
 		" -skip qtcharts -skip qtconnectivity -skip qtdatavis3d -skip qtdeclarative"
-		" -skip qtdoc -skip qtgamepad -skip qtgraphicaleffects -skip qtlocation"
+		" -skip qtgamepad -skip qtgraphicaleffects -skip qtlocation"
 		" -skip qtmacextras -skip qtmultimedia -skip qtnetworkauth -skip qtpurchasing"
 		" -skip qtquickcontrols -skip qtquickcontrols2 -skip qtremoteobjects -skip qtscript"
 		" -skip qtscxml -skip qtsensors -skip qtserialbus -skip qtserialport"
