@@ -204,7 +204,7 @@ Linux building from sources
 
 Firstly make sure that [CMake](#instruments), gcc and g++ are installed.
 
-1. Install `libXrender-devel`, `fontconfig-devel`, `libX11-devel`, `Mesa-devel` (OpenGL for Linux) from your repository.
+1. Install `libXrender-devel`, `fontconfig-devel`, `pthread-stubs-devel`, `libX11-devel`, `Mesa-devel` (OpenGL for Linux) from your repository.
    See [Qt Linux requirements](https://doc.qt.io/qt-5/linux-requirements.html) article for more information.
 2. Download [dependencies](#dependencies) sources.
 3. Build libjpeg, zlib, then libpng and then libtiff with
