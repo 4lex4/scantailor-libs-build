@@ -7,9 +7,7 @@ INCLUDE(cmake/ListItemsPrepend.cmake)
 INCLUDE(cmake/ToNativePath.cmake)
 
 # setting compiler flags
-IF (MINGW)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
-ENDIF ()
+SET(CMAKE_CXX_STANDARD 17)
 
 IF (MSVC AND WIN_XP)
 	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /D_USING_V110_SDK71_")
