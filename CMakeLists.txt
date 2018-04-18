@@ -8,10 +8,18 @@ include(cmake/ListItemsPrepend.cmake)
 # setting compiler flags
 set(CMAKE_CXX_STANDARD 17)
 
-if (MSVC AND WIN_XP)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /D_USING_V110_SDK71_")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_USING_V110_SDK71_")
-    set(CMAKE_EXE_LINKER_FLAGS "/SUBSYSTEM:CONSOLE,5.01 /SUBSYSTEM:WINDOWS,5.01 ${CMAKE_EXE_LINKER_FLAGS}")
+if (MSVC)
+    set(WIN_XP FALSE CACHE BOOLEAN "Whether to build for Windows XP.")
+    
+    if (WIN_XP)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /D_USING_V110_SDK71_")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_USING_V110_SDK71_")
+        set(CMAKE_EXE_LINKER_FLAGS "/SUBSYSTEM:CONSOLE,5.01 /SUBSYSTEM:WINDOWS,5.01 ${CMAKE_EXE_LINKER_FLAGS}")
+    endif()
+
+    # Disable checked iterators for extra performance.
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /D_SECURE_SCL=0")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_SECURE_SCL=0")
 endif()
 
 set(
