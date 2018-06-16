@@ -133,18 +133,6 @@ Supported toolchains for Windows are MinGW and MSVC.
     ~~~~
     mingw32-make -j %NUMBER_OF_PROCESSORS%
     ~~~~
-    ~~~~
-    cd ..\..
-    for /f "delims=" %a in ('dir /b /Ad ^| findstr /r /C:"qt-.*-[0-9]*\.[0-9]*"') do set qt_dir=%a
-    cd %qt_dir%
-    mingw32-make -j %NUMBER_OF_PROCESSORS%
-    ~~~~
-    ~~~~
-    cd ..
-    for /f "delims=" %a in ('dir /b /Ad ^| findstr /r /C:"boost_[0-9]*_[0-9]*_[0-9]*"') do set boost_dir=%a
-    cd %boost_dir%
-    b2 -q --with-test toolset=gcc link=static threading=multi -j %NUMBER_OF_PROCESSORS% stage
-    ~~~~
 
 #### <a name="building-scantailor-mingw"></a> Building ScanTailor
 
@@ -196,18 +184,6 @@ Supported toolchains for Windows are MinGW and MSVC.
     ~~~~
     jom -j %NUMBER_OF_PROCESSORS%
     ~~~~
-    ~~~~
-    cd ..\..
-    for /f "delims=" %a in ('dir /b /Ad ^| findstr /r /C:"qt-.*-[0-9]*\.[0-9]*"') do set qt_dir=%a
-    cd %qt_dir%
-    jom -j %NUMBER_OF_PROCESSORS%
-    ~~~~
-    ~~~~
-    cd ..
-    for /f "delims=" %a in ('dir /b /Ad ^| findstr /r /C:"boost_[0-9]*_[0-9]*_[0-9]*"') do set boost_dir=%a
-    cd %boost_dir%
-    b2 -q --with-test toolset=msvc link=static threading=multi -j %NUMBER_OF_PROCESSORS% stage
-    ~~~~
 
 #### <a name="building-scantailor-msvc"></a> Building ScanTailor
 
@@ -249,18 +225,6 @@ Supported toolchains for Windows are MinGW and MSVC.
     ~~~~
     ~~~~
     jom -j %NUMBER_OF_PROCESSORS%
-    ~~~~
-    ~~~~
-    cd ..\..
-    for /f "delims=" %a in ('dir /b /Ad ^| findstr /r /C:"qt-.*-[0-9]*\.[0-9]*"') do set qt_dir=%a
-    cd %qt_dir%
-    jom -j %NUMBER_OF_PROCESSORS%
-    ~~~~
-    ~~~~
-    cd ..
-    for /f "delims=" %a in ('dir /b /Ad ^| findstr /r /C:"boost_[0-9]*_[0-9]*_[0-9]*"') do set boost_dir=%a
-    cd %boost_dir%
-    b2 -q --with-test toolset=msvc link=static threading=multi define=_USING_V110_SDK71_ define=BOOST_USE_WINAPI_VERSION=0x0501 -j %NUMBER_OF_PROCESSORS% stage
     ~~~~
 
 #### <a name="building-scantailor-msvc-winxp"></a> Building ScanTailor

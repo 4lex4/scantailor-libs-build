@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.9.0)
 
 project("libs build")
 
@@ -304,6 +304,13 @@ else()
     message(FATAL_ERROR "Unsupported platform. MinGW and MSVC are only supported.")
 endif()
 
+math(EXPR boost_address_model "${CMAKE_SIZEOF_VOID_P} * 8")
+if (CMAKE_BUILD_TYPE EQUAL "Debug")
+    set(BOOST_BUILD_TYPE "debug")
+else()
+    set(BOOST_BUILD_TYPE "release")
+endif()
+
 set(boost_build_script "${CMAKE_BINARY_DIR}/build-boost.bat")
 
 add_custom_command(
@@ -311,6 +318,8 @@ add_custom_command(
         COMMAND "${CMAKE_COMMAND}"
         "-DTARGET_FILE=${boost_build_script}"
         "-DTOOLSET=${boost_toolset}"
+        "-DBUILD_TYPE=${BOOST_BUILD_TYPE}"
+        "-DADDRESS_MODEL=${boost_address_model}"
         "-DEXTRA_PARAMS=${extra_params}"
         -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate_boost_build_script.cmake"
         DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate_boost_build_script.cmake"
@@ -319,9 +328,14 @@ add_custom_command(
 
 add_custom_target(
         Boost ALL
-        COMMAND "${boost_build_script}"
+        COMMAND cmd /c "${boost_build_script}"
         DEPENDS "${boost_build_script}"
         WORKING_DIRECTORY "${boost_dirs}"
+)
+
+add_dependencies(
+        Boost ${ZLIB_LIBRARY_NAME} ${JPEG_LIBRARY_NAME}
+        ${PNG_LIBRARY_NAME} ${TIFF_LIBRARY_NAME}
 )
 
 #=================================== Qt ===================================#
@@ -352,12 +366,12 @@ endif()
 
 if (MINGW)
     set(platform win32-g++)
-    set(make_command "mingw32-make -j $ENV{NUMBER_OF_PROCESSORS}")
+    set(make_command "mingw32-make") # -j $ENV{NUMBER_OF_PROCESSORS} isn't required as the make command must be run as a subcommand.
 elseif (MSVC)
     find_program(JOM_EXECUTABLE jom HINTS "${source_outer_dir}")
     if (JOM_EXECUTABLE)
         file(TO_NATIVE_PATH "${JOM_EXECUTABLE}" make_command)
-        set(make_command "${make_command} -j $ENV{NUMBER_OF_PROCESSORS}")
+        set(make_command "\"${make_command}\" -j $ENV{NUMBER_OF_PROCESSORS}")
     else()
         set(make_command nmake)
         message(STATUS "Note that building Qt with NMAKE is slow. Consider using JOM instead. \
@@ -380,6 +394,17 @@ else()
     set(QT_BUILD_TYPE -release)
 endif()
 
+add_custom_target(
+        QtCopyLibs
+        COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:${JPEG_LIBRARY_NAME}>/$<TARGET_FILE_NAME:${JPEG_LIBRARY_NAME}>" "${QT_DIR}/qtbase/bin"
+        COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:${ZLIB_LIBRARY_NAME}>/$<TARGET_FILE_NAME:${ZLIB_LIBRARY_NAME}>" "${QT_DIR}/qtbase/bin"
+        COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:${PNG_LIBRARY_NAME}>/$<TARGET_FILE_NAME:${PNG_LIBRARY_NAME}>" "${QT_DIR}/qtbase/bin"
+)
+
+add_dependencies(
+        QtCopyLibs ${ZLIB_LIBRARY_NAME} ${JPEG_LIBRARY_NAME}
+        ${PNG_LIBRARY_NAME} ${TIFF_LIBRARY_NAME} Boost
+)
 
 set(qt_build_script "${CMAKE_BINARY_DIR}/build-qt.bat")
 set(qt_build_script_dependency "${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate_qt_build_script.cmake")
@@ -407,28 +432,12 @@ add_custom_command(
 
 add_custom_target(
         Qt ALL
-        COMMAND "${qt_build_script}"
+        COMMAND cmd /c "${qt_build_script}"
         DEPENDS "${qt_build_script}"
         WORKING_DIRECTORY "${QT_DIR}"
 )
 
 add_dependencies(
         Qt ${ZLIB_LIBRARY_NAME} ${JPEG_LIBRARY_NAME}
-        ${PNG_LIBRARY_NAME} ${TIFF_LIBRARY_NAME}
-)
-
-add_custom_command(
-            TARGET Qt
-            PRE_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:${JPEG_LIBRARY_NAME}>/$<TARGET_FILE_NAME:${JPEG_LIBRARY_NAME}>" "${QT_DIR}/qtbase/bin"
-)
-add_custom_command(
-            TARGET Qt
-            PRE_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:${ZLIB_LIBRARY_NAME}>/$<TARGET_FILE_NAME:${ZLIB_LIBRARY_NAME}>" "${QT_DIR}/qtbase/bin"
-)
-add_custom_command(
-            TARGET Qt
-            PRE_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:${PNG_LIBRARY_NAME}>/$<TARGET_FILE_NAME:${PNG_LIBRARY_NAME}>" "${QT_DIR}/qtbase/bin"
+        ${PNG_LIBRARY_NAME} ${TIFF_LIBRARY_NAME} Boost QtCopyLibs
 )
