@@ -373,7 +373,7 @@ elseif (MSVC)
     file(TO_NATIVE_PATH "${JOM_EXECUTABLE}" make_command)
     set(make_command "\"${make_command}\" -j $ENV{NUMBER_OF_PROCESSORS}")
   else()
-    set(make_command nmake)
+    set(make_command "nmake")
     message(STATUS "Note that building Qt with NMAKE is slow. Consider using JOM instead. \
     Drop jom.exe to the folder with other dependencies and/or set JOM_EXECUTABLE to point to it.")
   endif()
