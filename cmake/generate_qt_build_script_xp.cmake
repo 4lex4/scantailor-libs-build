@@ -13,7 +13,7 @@ file(
     " -skip qtmacextras -skip qtmultimedia"
     " -skip qtquickcontrols -skip qtquickcontrols2 -skip qtscript"
     " -skip qtsensors -skip qtserialbus -skip qtserialport"
-    " -skip qtsvg -skip qtwayland"
+    " -skip qtwayland"
     " -skip qtwebchannel -skip qtwebengine -skip qtwebsockets -skip qtwebview"
     " -skip qtx11extras -skip qtxmlpatterns"
     " -nomake examples -nomake tests"
