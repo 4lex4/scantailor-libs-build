@@ -1,7 +1,10 @@
 file(
     WRITE "${TARGET_FILE}"
+    "set PATH=${JPEG_BIN_DIR};${ZLIB_BIN_DIR};${PNG_BIN_DIR};%PATH%\n"
+    "set CL=/D_USING_V110_SDK71_;%CL%\n"
     "call "
     "configure -target xp -platform ${PLATFORM} ${BUILD_TYPE} -shared"
+    " -prefix \"${INSTALL_DIR}\""
     " -opengl desktop"
     " -system-zlib -system-libpng -system-libjpeg"
     " -skip qt3d -skip qtactiveqt -skip qtandroidextras -skip qtcanvas3d"
@@ -20,4 +23,5 @@ file(
     " -L \"${PNG_LINK_DIR}\"\n"
     "if %ERRORLEVEL% EQU 0 call "
     "${MAKE_COMMAND}\n"
-)
+    "if %ERRORLEVEL% EQU 0 call "
+    "${MAKE_COMMAND} install\n")
