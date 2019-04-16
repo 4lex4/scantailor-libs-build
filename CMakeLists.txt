@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.9.0)
+cmake_minimum_required(VERSION 3.9 FATAL_ERROR)
 
 project("libs build")
 
@@ -20,6 +20,9 @@ if (MSVC)
   # Disable checked iterators for extra performance.
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /D_SECURE_SCL=0")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_SECURE_SCL=0")
+elseif (WIN_XP)
+  unset(WIN_XP CACHE)
+  message(WARNING "Only MSVC toolchain is suppoted to build for Windows XP.")
 endif()
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}"
@@ -130,6 +133,7 @@ endif()
 list_items_prepend(libjpeg_sources "${JPEG_DIR}/")
 
 add_library(${JPEG_LIBRARY_NAME} SHARED ${libjpeg_sources})
+target_include_directories(${JPEG_LIBRARY_NAME} INTERFACE "${JPEG_DIR}")
 set_target_properties(
     ${JPEG_LIBRARY_NAME} PROPERTIES
     DEFINE_SYMBOL JPEG_BUILD
@@ -143,7 +147,6 @@ set_target_properties(
     RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "${JPEG_DIR}/bin"
     DEBUG_POSTFIX "d")
 
-
 #=================================== ZLIB ===================================#
 
 set(zlib_sources
@@ -153,6 +156,7 @@ set(zlib_sources
 list_items_prepend(zlib_sources "${ZLIB_DIR}/")
 
 add_library(${ZLIB_LIBRARY_NAME} SHARED ${zlib_sources})
+target_include_directories(${ZLIB_LIBRARY_NAME} INTERFACE "${ZLIB_DIR}")
 set_target_properties(
     ${ZLIB_LIBRARY_NAME} PROPERTIES
     DEFINE_SYMBOL ZLIB_DLL
@@ -166,17 +170,13 @@ set_target_properties(
     RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "${ZLIB_DIR}/bin"
     DEBUG_POSTFIX "d")
 
-
 #================================== LIBPNG ==================================#
-
-include_directories(${ZLIB_DIR})
 
 configure_file(
     "${PNG_DIR}/scripts/pnglibconf.h.prebuilt"
     "${PNG_DIR}/pnglibconf.h" COPYONLY)
 
-set(
-    libpng_sources
+set(libpng_sources
     png.c pngset.c pngget.c pngrutil.c pngtrans.c pngwutil.c pngread.c
     pngrio.c pngwio.c pngwrite.c pngrtran.c pngwtran.c pngmem.c
     pngerror.c pngpread.c)
@@ -188,7 +188,8 @@ endif()
 list_items_prepend(libpng_sources "${PNG_DIR}/")
 
 add_library(${PNG_LIBRARY_NAME} SHARED ${libpng_sources})
-target_link_libraries(${PNG_LIBRARY_NAME} ${ZLIB_LIBRARY_NAME})
+target_link_libraries(${PNG_LIBRARY_NAME} PUBLIC ${ZLIB_LIBRARY_NAME})
+target_include_directories(${PNG_LIBRARY_NAME} INTERFACE "${PNG_DIR}")
 set_target_properties(
     ${PNG_LIBRARY_NAME} PROPERTIES
     DEFINE_SYMBOL PNG_BUILD_DLL
@@ -202,10 +203,7 @@ set_target_properties(
     RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "${PNG_DIR}/bin"
     DEBUG_POSTFIX "d")
 
-
 #=================================== TIFF ===================================#
-
-include_directories("${JPEG_DIR}") # ZLIB_DIR already included above
   
 set(libtiff_sources
     tiff.h tiffio.h tiffvers.h
@@ -242,8 +240,13 @@ list_items_prepend(libtiff_sources "${TIFF_DIR}/libtiff/")
 
 add_library(${TIFF_LIBRARY_NAME} SHARED ${libtiff_sources})
 target_link_libraries(
-    ${TIFF_LIBRARY_NAME}
-    ${PNG_LIBRARY_NAME} ${JPEG_LIBRARY_NAME} ${ZLIB_LIBRARY_NAME})
+    ${TIFF_LIBRARY_NAME} PUBLIC
+    ${PNG_LIBRARY_NAME} ${JPEG_LIBRARY_NAME})
+target_include_directories(${TIFF_LIBRARY_NAME} INTERFACE "${TIFF_DIR}/libtiff")
+target_compile_definitions(${TIFF_LIBRARY_NAME} PRIVATE
+    CCITT_SUPPORT=1 PACKBITS_SUPPORT=1 LZW_SUPPORT=1
+    THUNDER_SUPPORT=1 NEXT_SUPPORT=1 LOGLUV_SUPPORT=1 MDI_SUPPORT=1 ZIP_SUPPORT=1
+    PIXARLOG_SUPPORT=1 JPEG_SUPPORT=1 OJPEG_SUPPORT=1)
 set_target_properties(
     ${TIFF_LIBRARY_NAME} PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${TIFF_DIR}/stage/lib"
@@ -255,11 +258,6 @@ set_target_properties(
     RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${TIFF_DIR}/bin"
     RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "${TIFF_DIR}/bin"
     DEBUG_POSTFIX "d")
-
-target_compile_definitions(${TIFF_LIBRARY_NAME} PRIVATE 
-    CCITT_SUPPORT=1 PACKBITS_SUPPORT=1 LZW_SUPPORT=1
-    THUNDER_SUPPORT=1 NEXT_SUPPORT=1 LOGLUV_SUPPORT=1 MDI_SUPPORT=1 ZIP_SUPPORT=1
-    PIXARLOG_SUPPORT=1 JPEG_SUPPORT=1 OJPEG_SUPPORT=1)
 
 #================================= Boost ================================#
 
@@ -282,21 +280,21 @@ else()
   set(BOOST_BUILD_TYPE "release")
 endif()
 
-file_to_native_path("${BOOST_INSTALL_DIR}" boost_install_dir_native)
-
 set(boost_build_script "${CMAKE_BINARY_DIR}/build-boost.bat")
+set(boost_build_script_generator "${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate_boost_build_script.cmake")
 
 add_custom_command(
     OUTPUT "${boost_build_script}"
     COMMAND "${CMAKE_COMMAND}"
+    "-DSOURCE_DIR=${CMAKE_SOURCE_DIR}"
     "-DTARGET_FILE=${boost_build_script}"
     "-DTOOLSET=${boost_toolset}"
     "-DBUILD_TYPE=${BOOST_BUILD_TYPE}"
     "-DADDRESS_MODEL=${boost_address_model}"
     "-DEXTRA_PARAMS=${extra_params}"
-    "-DINSTALL_DIR=${boost_install_dir_native}"
-    -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate_boost_build_script.cmake"
-    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate_boost_build_script.cmake"
+    "-DINSTALL_DIR=${BOOST_INSTALL_DIR}"
+    -P "${boost_build_script_generator}"
+    DEPENDS "${boost_build_script_generator}"
     VERBATIM)
 
 add_custom_target(
@@ -310,6 +308,8 @@ add_dependencies(
     ${PNG_LIBRARY_NAME} ${TIFF_LIBRARY_NAME})
 
 #=================================== Qt ===================================#
+
+set(QT_MODULES_TO_BUILD qtbase qttools qtimageformats qtsvg)
 
 if (MSVC)
   # Find all *.conf files under mkspecs that mention -Zc:wchar_t- and remove
@@ -331,7 +331,7 @@ if (MSVC)
 endif()
 
 if (MINGW)
-  set(platform win32-g++)
+  set(platform "win32-g++")
   set(make_command "mingw32-make") # -j $ENV{NUMBER_OF_PROCESSORS} isn't required as the make command must be run as a subcommand.
 elseif (MSVC)
   find_program(JOM_EXECUTABLE jom HINTS "${SOURCE_OUTER_DIR}")
@@ -344,11 +344,13 @@ elseif (MSVC)
     Drop jom.exe to the folder with other dependencies and/or set JOM_EXECUTABLE to point to it.")
   endif()
   
-  set(platform win32-msvc)
-  
-  # Qt 5.6.3 is the latest version that supports Win XP
-  if (WIN_XP)
-    set(platform win32-msvc2017)
+  set(platform "win32-msvc")
+  if (NOT EXISTS "${QT_DIR}/qtbase/mkspecs/${platform}")
+    if (MSVC_TOOLSET_VERSION EQUAL 140)
+      string(APPEND platform "2015")
+    elseif (MSVC_TOOLSET_VERSION EQUAL 141)
+      string(APPEND platform "2017")
+    endif()
   endif()
 else()
   message(FATAL_ERROR "Unsupported platform.")
@@ -360,36 +362,39 @@ else()
   set(QT_BUILD_TYPE -release)
 endif()
 
-file_to_native_path("${JPEG_DIR}" jpeg_include_dir_native)
-file_to_native_path("${ZLIB_DIR}" zlib_include_dir_native)
-file_to_native_path("${PNG_DIR}" png_include_dir_native)
-file_to_native_path("${QT_INSTALL_DIR}" qt_install_dir_native)
-
 set(qt_build_script "${CMAKE_BINARY_DIR}/build-qt.bat")
-set(qt_build_script_dependency "${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate_qt_build_script.cmake")
-if (WIN_XP)
-  set(qt_build_script_dependency "${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate_qt_build_script_xp.cmake")
-endif()
+set(qt_build_script_generator "${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate_qt_build_script.cmake")
+
+set(qt_include_dirs_helper
+    "$<TARGET_PROPERTY:${JPEG_LIBRARY_NAME},INTERFACE_INCLUDE_DIRECTORIES>"
+    "$<TARGET_PROPERTY:${ZLIB_LIBRARY_NAME},INTERFACE_INCLUDE_DIRECTORIES>"
+    "$<TARGET_PROPERTY:${PNG_LIBRARY_NAME},INTERFACE_INCLUDE_DIRECTORIES>")
+set(qt_link_dirs_helper
+    "$<TARGET_LINKER_FILE_DIR:${JPEG_LIBRARY_NAME}>"
+    "$<TARGET_LINKER_FILE_DIR:${ZLIB_LIBRARY_NAME}>"
+    "$<TARGET_LINKER_FILE_DIR:${PNG_LIBRARY_NAME}>")
+set(qt_runtime_dirs_helper
+    "$<TARGET_FILE_DIR:${JPEG_LIBRARY_NAME}>"
+    "$<TARGET_FILE_DIR:${ZLIB_LIBRARY_NAME}>"
+    "$<TARGET_FILE_DIR:${PNG_LIBRARY_NAME}>")
 
 add_custom_command(
     OUTPUT "${qt_build_script}"
     COMMAND "${CMAKE_COMMAND}"
+    "-DSOURCE_DIR=${CMAKE_SOURCE_DIR}"
     "-DTARGET_FILE=${qt_build_script}"
+    "-DWIN_XP=${WIN_XP}"
     "-DPLATFORM=${platform}"
     "-DBUILD_TYPE=${QT_BUILD_TYPE}"
-    "-DINSTALL_DIR=${qt_install_dir_native}"
     "-DMAKE_COMMAND=${make_command}"
-    "-DJPEG_INCLUDE_DIR=${jpeg_include_dir_native}"
-    "-DZLIB_INCLUDE_DIR=${zlib_include_dir_native}"
-    "-DPNG_INCLUDE_DIR=${png_include_dir_native}"
-    "-DJPEG_LINK_DIR=$<TARGET_LINKER_FILE_DIR:${JPEG_LIBRARY_NAME}>"
-    "-DZLIB_LINK_DIR=$<TARGET_LINKER_FILE_DIR:${ZLIB_LIBRARY_NAME}>"
-    "-DPNG_LINK_DIR=$<TARGET_LINKER_FILE_DIR:${PNG_LIBRARY_NAME}>"
-    "-DJPEG_BIN_DIR=$<TARGET_FILE_DIR:${JPEG_LIBRARY_NAME}>"
-    "-DZLIB_BIN_DIR=$<TARGET_FILE_DIR:${ZLIB_LIBRARY_NAME}>"
-    "-DPNG_BIN_DIR=$<TARGET_FILE_DIR:${PNG_LIBRARY_NAME}>"
-    -P "${qt_build_script_dependency}"
-    DEPENDS "${qt_build_script_dependency}"
+    "-DINSTALL_DIR=${QT_INSTALL_DIR}"
+    "-DQT_DIR=${QT_DIR}"
+    "-DMODULES_TO_BUILD=${QT_MODULES_TO_BUILD}"
+    "-DINCLUDE_DIRS=${qt_include_dirs_helper}"
+    "-DLINK_DIRS=${qt_link_dirs_helper}"
+    "-DRUNTIME_DIRS=${qt_runtime_dirs_helper}"
+    -P "${qt_build_script_generator}"
+    DEPENDS "${qt_build_script_generator}"
     VERBATIM)
 
 add_custom_target(
@@ -405,7 +410,7 @@ add_dependencies(
 add_custom_command(
     TARGET Qt POST_BUILD
     COMMAND "${CMAKE_COMMAND}" -E make_directory "${QT_INSTALL_DIR}/bin"
-    COMMAND "${CMAKE_COMMAND}" -E copy 
+    COMMAND "${CMAKE_COMMAND}" -E copy
     "$<TARGET_FILE:${JPEG_LIBRARY_NAME}>"
     "$<TARGET_FILE:${ZLIB_LIBRARY_NAME}>"
     "$<TARGET_FILE:${PNG_LIBRARY_NAME}>"
