@@ -2,35 +2,39 @@ cmake_minimum_required(VERSION 3.9 FATAL_ERROR)
 
 project("libs build")
 
-include(cmake/SetDefaultBuildType.cmake)
-include(cmake/ListItemsPrepend.cmake)
-include(cmake/ToNativePath.cmake)
-
 # setting compiler flags
 set(CMAKE_CXX_STANDARD 17)
 
-if (MSVC)
-  option(WIN_XP "Whether to build for Windows XP." OFF)
-  if (WIN_XP)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /D_USING_V110_SDK71_")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_USING_V110_SDK71_")
-    set(CMAKE_EXE_LINKER_FLAGS "/SUBSYSTEM:CONSOLE,5.01 /SUBSYSTEM:WINDOWS,5.01 ${CMAKE_EXE_LINKER_FLAGS}")
+if (NOT DEFAULT_COMPILER_FLAGS_IS_SET)
+  if (MSVC)
+    option(WIN_XP "Whether to build for Windows XP." OFF)
+    if (WIN_XP)
+      set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /D_USING_V110_SDK71_")
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_USING_V110_SDK71_")
+      set(CMAKE_EXE_LINKER_FLAGS "/SUBSYSTEM:CONSOLE,5.01 /SUBSYSTEM:WINDOWS,5.01 ${CMAKE_EXE_LINKER_FLAGS}")
+    endif()
+
+    # Disable checked iterators for extra performance.
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /D_SECURE_SCL=0")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_SECURE_SCL=0")
+  elseif (WIN_XP)
+    unset(WIN_XP CACHE)
+    message(WARNING "Only MSVC toolchain is supported to build for Windows XP.")
   endif()
 
-  # Disable checked iterators for extra performance.
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /D_SECURE_SCL=0")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_SECURE_SCL=0")
-elseif (WIN_XP)
-  unset(WIN_XP CACHE)
-  message(WARNING "Only MSVC toolchain is suppoted to build for Windows XP.")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}"
+      CACHE STRING "Common C flags for all build configurations." FORCE)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}"
+      CACHE STRING "Common C++ flags for all build configurations." FORCE)
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}"
+      CACHE STRING "Common link flags for all build configurations." FORCE)
+
+  set(DEFAULT_COMPILER_FLAGS_IS_SET YES CACHE INTERNAL "" FORCE)
 endif()
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}"
-    CACHE STRING "Common C flags for all build configurations." FORCE)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}"
-    CACHE STRING "Common C++ flags for all build configurations." FORCE)
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}"
-    CACHE STRING "Common link flags for all build configurations." FORCE)
+include(cmake/SetDefaultBuildType.cmake)
+include(cmake/ListItemsPrepend.cmake)
+include(cmake/ToNativePath.cmake)
 
 st_set_default_build_type(Release)
 
