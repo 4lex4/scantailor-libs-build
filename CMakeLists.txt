@@ -95,6 +95,9 @@ endif()
 set(BOOST_INSTALL_DIR "${SOURCE_OUTER_DIR}/Boost" CACHE PATH "Boost installation directory.")
 set(QT_INSTALL_DIR "${SOURCE_OUTER_DIR}/Qt" CACHE PATH "Qt installation directory.")
 
+set(QT_MODULES_TO_BUILD qtbase qttools qtimageformats qtsvg
+    CACHE STRING "Qt modules to build (empty to build all).")
+
 #=================================== JPEG ===================================#
 
 if (MSVC AND (NOT EXISTS "${JPEG_DIR}/jmorecfg.h.orig"))
@@ -312,8 +315,6 @@ add_dependencies(
     ${PNG_LIBRARY_NAME} ${TIFF_LIBRARY_NAME})
 
 #=================================== Qt ===================================#
-
-set(QT_MODULES_TO_BUILD qtbase qttools qtimageformats qtsvg)
 
 if (MSVC)
   # Find all *.conf files under mkspecs that mention -Zc:wchar_t- and remove
