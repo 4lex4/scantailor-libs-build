@@ -1,6 +1,5 @@
 @echo off
 setlocal EnableDelayedExpansion
-chcp 437 >nul
 
 :: checking for administrative permissions
 net session >nul 2>nul

@@ -1,6 +1,5 @@
 @echo off
 setlocal EnableDelayedExpansion
-chcp 437 >nul
 
 if "%MINGW%"=="" (
 	exit /b 1
