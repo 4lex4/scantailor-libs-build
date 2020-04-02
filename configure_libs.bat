@@ -2,7 +2,7 @@
 setlocal EnableDelayedExpansion
 
 if "%MINGW%"=="" (
-	exit /b 1
+  exit /b 1
 )
 
 :: setting the paths
@@ -18,9 +18,9 @@ set tiff_dir_name=tiff-[0-9]*.[0-9]*.[0-9]*
 
 for /f "delims=" %%a in ('dir "%PATH_TO_TOOLS%" /b /Ad ^| findstr /r /C:"%MSYS2_DIR_NAME%"') do set msys2_dir=%PATH_TO_TOOLS%%%a
 if not exist "!msys2_dir!" (
-	echo ERROR: msys2 not found. Exiting... >&2
-	echo. & pause
-	exit /b 1
+  echo ERROR: msys2 not found. Exiting... >&2
+  echo. & pause
+  exit /b 1
 )
 set MSYS2_SHELL="!msys2_dir!\msys2_shell.cmd"
 
@@ -55,10 +55,10 @@ set dir=%~2
 set arguments=%~3
 
 if exist "%dir%" (
-	call %MSYS2_SHELL% -%MINGW% -where "%dir%" -c "./configure %arguments%"
+  call %MSYS2_SHELL% -%MINGW% -where "%dir%" -c "./configure %arguments%"
 ) else (
-	echo ERROR: %name% not found. >&2
-	pause
+  echo ERROR: %name% not found. >&2
+  pause
 )
 
 endlocal
