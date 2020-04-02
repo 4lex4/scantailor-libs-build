@@ -108,7 +108,7 @@ Supported toolchains for Windows are MinGW and MSVC.
 #### <a name="windows-mingw-building-dependencies"></a> Building dependencies 
 1. Run script `configure_libs_x32.bat` / `configure_libs_x64.bat`
 2. Open the command prompt (`cmd`), navigate to the `scantailor-libs-build-master`
-   directory (`cd /d "<path>"`) and enter:
+   directory (`cd /d "<dir>"`) and enter:
 
    ~~~~
    mkdir build & cd build
@@ -120,7 +120,7 @@ Supported toolchains for Windows are MinGW and MSVC.
 
 #### <a name="windows-mingw-building-scantailor"></a> Building ScanTailor
 1. Open the command prompt (`cmd`), navigate to the `scantailor-advanced-x.x.x`
-   directory (`cd /d "<path>"`) and enter:
+   directory (`cd /d "<dir>"`) and enter:
 
    ~~~~
    mkdir build & cd build
@@ -144,7 +144,7 @@ Supported toolchains for Windows are MinGW and MSVC.
 #### <a name="windows-msvc-building-for-windows-7-and-higher"></a> *<u>Building for Windows 7 and higher</u>*
 #### <a name="windows-msvc-building-dependencies"></a> Building dependencies
 1. Open the Native Tools Command Prompt for VS, navigate to the `scantailor-libs-build-master`
-   directory (`cd /d "<path>"`) and enter:
+   directory (`cd /d "<dir>"`) and enter:
 
    ~~~~
    mkdir build & cd build
@@ -156,7 +156,7 @@ Supported toolchains for Windows are MinGW and MSVC.
 
 #### <a name="windows-msvc-building-scantailor"></a> Building ScanTailor
 1. Open the Native Tools Command Prompt for VS, navigate to the `scantailor-advanced-x.x.x`
-   directory (`cd /d "<path>"`) and enter:
+   directory (`cd /d "<dir>"`) and enter:
 
    ~~~~
    mkdir build & cd build
@@ -175,7 +175,7 @@ Supported toolchains for Windows are MinGW and MSVC.
    set LIB=%ProgramFiles(x86)%\Microsoft SDKs\Windows\v7.1A\Lib;%LIB%
    ~~~~
 
-2. Navigate to the `scantailor-libs-build-master` directory (`cd /d "<path>"`) and enter:
+2. Navigate to the `scantailor-libs-build-master` directory (`cd /d "<dir>"`) and enter:
 
    ~~~~
    mkdir build & cd build
@@ -187,7 +187,7 @@ Supported toolchains for Windows are MinGW and MSVC.
 
 #### <a name="windows-msvc-winxp-building-scantailor"></a> Building ScanTailor
 1. Configure some environment variables [as stated above](#configure-environment-msvc-winxp), if it has not been done yet
-2. Navigate to the `scantailor-advanced-x.x.x` directory (`cd /d "<path>"`) and enter:
+2. Navigate to the `scantailor-advanced-x.x.x` directory (`cd /d "<dir>"`) and enter:
 
    ~~~~
    mkdir build & cd build
@@ -265,13 +265,14 @@ or [build them from sources](#building-from-sources).
 6. Build boost:
 
    ~~~~
+   mkdir build
    ./bootstrap.sh
-   ./b2 -q --with-test toolset=gcc link=shared threading=multi -j `nproc` stage
+   ./b2 --build-dir=build -q --with-test toolset=gcc link=shared threading=multi -j `nproc` stage
    sudo ./b2 -q --with-test toolset=gcc link=shared threading=multi install
    ~~~~
 
 #### <a name="linux-building-scantailor"></a> Building ScanTailor
-1. Navigate to the `scantailor-advanced-x.x.x` directory (`cd "<path>"`) and enter:
+1. Navigate to the `scantailor-advanced-x.x.x` directory (`cd "<dir>"`) and enter:
 
    ~~~~
    mkdir build; cd build
