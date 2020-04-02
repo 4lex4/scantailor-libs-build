@@ -11,32 +11,30 @@ This is an instruction for building ScanTailor Advanced and its dependencies for
 * [ScanTailor building options](#scantailor-building-options)
 * [Instructions](#instructions)
   * [**Windows**](#windows)
-    * [Preparing to building](#preparing-to-building)
-    * [Building with MinGW](#building-with-mingw)
-      * [Tools](#windows-tools-mingw)
-      * [Preparing tools](#preparing-tools-mingw)
-      1. [Building dependencies](#building-dependencies-mingw)
-      2. [Building ScanTailor](#building-scantailor-mingw)
-    * [Building with MSVC](#building-with-msvc)
-      * [Tools](#windows-tools-msvc)
-      * [Preparing tools](#preparing-tools-msvc)
-      * [Building for Windows 7 and higher](#building-for-windows-7-and-higher)
-        1. [Building dependencies](#building-dependencies-msvc)
-        2. [Building ScanTailor](#building-scantailor-msvc)
-      * [Building for Windows XP](#building-for-windows-xp)
-        1. [Building dependencies](#building-dependencies-msvc-winxp)
-        2. [Building ScanTailor](#building-scantailor-msvc-winxp)
+    * [Preparing to building](#windows-preparing-to-building)
+    * [Building with MinGW](#windows-building-with-mingw)
+      * [Tools](#windows-mingw-tools)
+      * [Preparing tools](#windows-mingw-preparing-tools)
+      1. [Building dependencies](#windows-mingw-building-dependencies)
+      2. [Building ScanTailor](#windows-mingw-building-scantailor)
+    * [Building with MSVC](#windows-building-with-msvc)
+      * [Tools](#windows-msvc-tools)
+      * [Preparing tools](#windows-msvc-preparing-tools)
+      * [Building for Windows 7 and higher](#windows-msvc-building-for-windows-7-and-higher)
+        1. [Building dependencies](#windows-msvc-building-dependencies)
+        2. [Building ScanTailor](#windows-msvc-building-scantailor)
+      * [Building for Windows XP](#windows-msvc-building-for-windows-xp)
+        1. [Building dependencies](#windows-msvc-winxp-building-dependencies)
+        2. [Building ScanTailor](#windows-msvc-winxp-building-scantailor)
   * [**Linux**](#linux)
-    1. [Getting dependencies](#getting-dependencies)
-       * [Downloading from repositories](#downloading-from-repositories)
-       * [Building from sources](#building-from-sources)
-    2. [Building ScanTailor](#building-scantailor-linux)
+    1. [Getting dependencies](#linux-getting-dependencies)
+       * [Downloading from repositories](#linux-downloading-from-repositories)
+       * [Building from sources](#linux-building-from-sources)
+    2. [Building ScanTailor](#linux-building-scantailor)
 * [Packaging](#packaging)
-
 
 Dependencies
 ------------
-
 1. [Boost 1.60.x or higher](http://www.boost.org/)
 2. [libpng 1.x.x](https://sourceforge.net/projects/libpng/files/)
 3. [zlib 1.x.x](https://sourceforge.net/projects/libpng/files/zlib/)
@@ -46,13 +44,10 @@ Dependencies
 
 Tools
 -----
-
 1. [CMake 3.9.x or higher](https://cmake.org/download/)
-
 
 ScanTailor building options
 -----
-
 Usage: `cmake -D <option>=<value> ...`
 
 Useful options:  
@@ -63,22 +58,18 @@ Useful options:
 
 Instructions
 ----------
-
 ### Windows
-
 Supported toolchains for Windows are MinGW and MSVC.
 
-
-#### Preparing to building
-
+#### <a name="windows-preparing-to-building"></a> <u>Preparing to building</u>
 1. Download the sources of [ScanTailor Advanced](https://github.com/4lex4/scantailor-advanced/releases/)
 2. Clone [this project](https://github.com/4lex4/scantailor-libs-build). (Push the 'Clone or download' button above)
 3. Unpack ScanTailor Advanced sources into a folder
 4. Create the empty folder named `libs` near the ScanTailor sources folder (but not inside)
 5. Download and unpack the sources of all [the dependencies](#dependencies) listed into the libs folder
 6. Unpack the folder of this project there.  
-   You must have gotten a catalog structure similar to this:  
-   
+   You must have gotten a catalog structure similar to this:
+
    ~~~~
    ..\
     |
@@ -92,74 +83,57 @@ Supported toolchains for Windows are MinGW and MSVC.
     |   |-- tiff-4.x.x
     |   |-- zlib-1.x.x
     |   
-    |-- scantailor-advanced-1.x.x
+    |-- scantailor-advanced-x.x.x
     |
-   ~~~~ 
+   ~~~~
 
 7. Install [CMake](#tools)
 
-
-#### Building with MinGW
-
-#### <a name="windows-tools-mingw"></a> Tools
-
+#### <a name="windows-building-with-mingw"></a> <u>Building with MinGW</u>
+#### <a name="windows-mingw-tools"></a> Tools
 1. [MinGW-w64](https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/)
-   (for 32 and 64 bit Windows; posix and seh/dwarf versions recommended)
+   (for 32 and 64 bit Windows; `posix` and `dwarf` / `seh` versions recommended)
 2. [msys2](http://www.msys2.org/)
 
-#### <a name="preparing-tools-mingw"></a> Preparing tools
-
+#### <a name="windows-mingw-preparing-tools"></a> Preparing tools
 1. Install mingw64 into the path `C:\mingw64` / `C:\mingw32`
 2. Install msys2 into the path `C:\msys64` / `C:\msys32`
-3. Add mingw into the `PATH` environment variable:  
+3. Run script `configure_msys.bat` with administrative permissions 
+4. Add mingw into the `PATH` environment variable:  
    1. Go to: My Computer -> Right click -> Properties -> Advanced system settings  
    2. Click Environment variables  
    3. Find `Path` variable in the system variables tab and paste
       `;C:\mingw64\bin` / `;C:\mingw32\bin` at the end of its value
 
-#### <a name="building-dependencies-mingw"></a> Building dependencies
+#### <a name="windows-mingw-building-dependencies"></a> Building dependencies 
+1. Run script `configure_libs_x32.bat` / `configure_libs_x64.bat`
+2. Open the command prompt (`cmd`), navigate to the `scantailor-libs-build-master`
+   directory (`cd /d "<path>"`) and enter:
 
-1. Run script `configure_msys.bat` with administrative permissions
-2. Run script `configure_libs_x32.bat` / `configure_libs_x64.bat`
-3. Open the command prompt (`cmd`) and enter, 
-   having `...` replaced with the folder containing the libs folder:  
-   
    ~~~~
-   cd /d "...\libs\scantailor-libs-build-master"
-   mkdir build && cd build
+   mkdir build & cd build
    cmake -G "MinGW Makefiles" --build ..
-   ~~~~
-   ~~~~
    mingw32-make -j %NUMBER_OF_PROCESSORS%
    ~~~~
 
 >***Note**: when building successfully done the `qt-everywhere-opensource-src-5.x.x` and `boost_1_xx_x` folders can be removed to free up disk space.*
 
-#### <a name="building-scantailor-mingw"></a> Building ScanTailor
+#### <a name="windows-mingw-building-scantailor"></a> Building ScanTailor
+1. Open the command prompt (`cmd`), navigate to the `scantailor-advanced-x.x.x`
+   directory (`cd /d "<path>"`) and enter:
 
-1. Open the command prompt (`cmd`) and enter, 
-   having `...\scantailor-advanced-1.x.x` replaced
-   with the path to the scantailor-advanced sources:
-	
    ~~~~
-   cd /d "...\scantailor-advanced-1.x.x"
-   mkdir build && cd build
+   mkdir build & cd build
    cmake -G "MinGW Makefiles" --build ..
-   ~~~~
-   ~~~~
    mingw32-make -j %NUMBER_OF_PROCESSORS%
    ~~~~
 
-
-#### Building with MSVC
-
-#### <a name="windows-tools-msvc"></a> Tools
-
+#### <a name="windows-building-with-msvc"></a> <u>Building with MSVC</u>
+#### <a name="windows-msvc-tools"></a> Tools
 1. [Visual Studio](https://www.visualstudio.com/) (version 2015 or higher \[with the Win XP compability package\] required)
 2. [Jom](http://wiki.qt.io/Jom)
 
-#### <a name="preparing-tools-msvc"></a> Preparing tools
-
+#### <a name="windows-msvc-preparing-tools"></a> Preparing tools
 1. Place `jom.exe` into the `%ProgramFiles(x86)%\Jom\` folder
 2. Add Jom into the `PATH` environment variable:  
    1. go to: My Computer -> Right click -> Properties -> Advanced system settings  
@@ -167,43 +141,31 @@ Supported toolchains for Windows are MinGW and MSVC.
    3. Find `Path` variable in the system variables tab and paste
       `;%ProgramFiles(x86)%\Jom\` at the end of its value
 
-#### Building for Windows 7 and higher
-
-#### <a name="building-dependencies-msvc"></a> Building dependencies
-
-1. Open the Native Tools Command Prompt for VS and enter, 
-   having `...` replaced with the folder containing the libs:
+#### <a name="windows-msvc-building-for-windows-7-and-higher"></a> *<u>Building for Windows 7 and higher</u>*
+#### <a name="windows-msvc-building-dependencies"></a> Building dependencies
+1. Open the Native Tools Command Prompt for VS, navigate to the `scantailor-libs-build-master`
+   directory (`cd /d "<path>"`) and enter:
 
    ~~~~
-   cd /d "...\libs\scantailor-libs-build-master"
-   mkdir build && cd build
+   mkdir build & cd build
    cmake -G "NMake Makefiles JOM" -D CMAKE_BUILD_TYPE=Release --build ..
-   ~~~~
-   ~~~~
    jom -j %NUMBER_OF_PROCESSORS%
    ~~~~
 
 >***Note**: when building successfully done the `qt-everywhere-opensource-src-5.x.x` and `boost_1_xx_x` folders can be removed to free up disk space.*
 
-#### <a name="building-scantailor-msvc"></a> Building ScanTailor
-
-1. Open the Native Tools Command Prompt for VS and enter, 
-   having `...\scantailor-advanced-1.x.x` replaced
-   with the path to the scantailor-advanced sources:
+#### <a name="windows-msvc-building-scantailor"></a> Building ScanTailor
+1. Open the Native Tools Command Prompt for VS, navigate to the `scantailor-advanced-x.x.x`
+   directory (`cd /d "<path>"`) and enter:
 
    ~~~~
-   cd /d "...\scantailor-advanced-1.x.x"
-   mkdir build && cd build
+   mkdir build & cd build
    cmake -G "NMake Makefiles JOM" -D CMAKE_BUILD_TYPE=Release --build ..
-   ~~~~
-   ~~~~
    jom -j %NUMBER_OF_PROCESSORS%
    ~~~~
 
-#### Building for Windows XP
-
-#### <a name="building-dependencies-msvc-winxp"></a> Building dependencies
-
+#### <a name="windows-msvc-building-for-windows-xp"></a> *<u>Building for Windows XP</u>*
+#### <a name="windows-msvc-winxp-building-dependencies"></a> Building dependencies
 1. <a name="configure-environment-msvc-winxp"></a> 
    Configure some environment variables. Open the Native Tools Command Prompt for VS and enter:
 
@@ -213,47 +175,35 @@ Supported toolchains for Windows are MinGW and MSVC.
    set LIB=%ProgramFiles(x86)%\Microsoft SDKs\Windows\v7.1A\Lib;%LIB%
    ~~~~
 
-2. Enter, having `...` replaced with the folder containing the libs:
+2. Navigate to the `scantailor-libs-build-master` directory (`cd /d "<path>"`) and enter:
 
    ~~~~
-   cd /d "...\libs\scantailor-libs-build-master"
-   mkdir build && cd build
+   mkdir build & cd build
    cmake -G "NMake Makefiles JOM" -D CMAKE_BUILD_TYPE=Release -D WIN_XP=ON --build ..
-   ~~~~
-   ~~~~
    jom -j %NUMBER_OF_PROCESSORS%
    ~~~~
 
 >***Note**: when building successfully done the `qt-everywhere-opensource-src-5.x.x` and `boost_1_xx_x` folders can be removed to free up disk space.*
 
-#### <a name="building-scantailor-msvc-winxp"></a> Building ScanTailor
-
+#### <a name="windows-msvc-winxp-building-scantailor"></a> Building ScanTailor
 1. Configure some environment variables [as stated above](#configure-environment-msvc-winxp), if it has not been done yet
-
-2. Enter, having `...\scantailor-advanced-1.x.x` replaced
-   with the path to the scantailor-advanced sources:
+2. Navigate to the `scantailor-advanced-x.x.x` directory (`cd /d "<path>"`) and enter:
 
    ~~~~
-   cd /d "...\scantailor-advanced-1.x.x"
-   mkdir build && cd build
+   mkdir build & cd build
    cmake -G "NMake Makefiles JOM" -D CMAKE_BUILD_TYPE=Release -D WIN_XP=ON --build ..
-   ~~~~
-   ~~~~
    jom -j %NUMBER_OF_PROCESSORS%
    ~~~~
 
 ### Linux
-
-#### Getting dependencies
-
+#### <a name="linux-getting-dependencies"></a> Getting dependencies
 Linux users have two options here: [download them from their repositories](#downloading-from-repositories) 
 or [build them from sources](#building-from-sources).
 
-#### Downloading from repositories
-
+#### <a name="linux-downloading-from-repositories"></a> *Downloading from repositories*
 1. Just download [CMake](#tools) and [dependencies](#dependencies) developing packages from the repository and
    then [build scantailor](#build-scantailor-linux). Developing packages are usually have `-devel` or `-dev` suffix  
-   
+
    Examples:  
    <details><summary><i>Ubuntu</i></summary>
    <code>
@@ -266,8 +216,7 @@ or [build them from sources](#building-from-sources).
    </code>
    </details>
 
-#### Building from sources
-
+#### <a name="linux-building-from-sources"></a> *Building from sources*
 1. Install [CMake](#tools), gcc, g++ and
    developing packages of Xrender, fontconfig, pthread-stubs, X11, OpenGL (Mesa) from your repository.
    Developing packages are usually have `-devel` or `-dev` suffix.  
@@ -286,7 +235,8 @@ or [build them from sources](#building-from-sources).
 4. Build libjpeg, zlib, then libpng and then libtiff with
 
    ~~~~
-   ./configure
+   mkdir build; cd build
+   ../configure
    make -j `nproc`
    sudo make install
    ~~~~
@@ -294,11 +244,12 @@ or [build them from sources](#building-from-sources).
 5. Build Qt:
 
    ~~~~
-   ./configure -platform linux-g++ -release -shared \
+   mkdir build; cd build
+   ../configure -platform linux-g++ -release -shared \
    -system-zlib -system-libpng -system-libjpeg -system-freetype \
    -skip qt3d -skip qtactiveqt -skip qtandroidextras -skip qtcanvas3d -skip qtcharts -skip qtconnectivity \
-   -skip qtdatavis3d -skip qtdeclarative -skip qtdoc -skip qtgamepad -skip qtgraphicaleffects -skip qtlocation \
-   -skip qtmacextras -skip qtmultimedia -skip qtnetworkauth -skip qtpurchasing -skip qtquickcontrols \
+   -skip qtdatavis3d -skip qtdeclarative -skip qtdoc -skip qtimageformats -skip qtgamepad -skip qtgraphicaleffects \
+   -skip qtlocation -skip qtmacextras -skip qtmultimedia -skip qtnetworkauth -skip qtpurchasing -skip qtquickcontrols \
    -skip qtquickcontrols2 -skip qtremoteobjects -skip qtscript -skip qtscxml -skip qtsensors \
    -skip qtspeech -skip qtvirtualkeyboard -skip qtwayland -skip qtwebchannel \
    -skip qtwebengine -skip qtwebsockets -skip qtwebview -skip qtwinextras -skip qtxmlpatterns \
@@ -319,17 +270,14 @@ or [build them from sources](#building-from-sources).
    sudo ./b2 -q --with-test toolset=gcc link=shared threading=multi install
    ~~~~
 
-#### <a name="building-scantailor-linux"></a> Building ScanTailor
-
-1. Enter, having `.../scantailor-advanced-1.x.x` replaced with the path to the scantailor-advanced sources:
+#### <a name="linux-building-scantailor"></a> Building ScanTailor
+1. Navigate to the `scantailor-advanced-x.x.x` directory (`cd "<path>"`) and enter:
 
    ~~~~
-   cd ".../scantailor-advanced-1.x.x"
-   mkdir build && cd build
+   mkdir build; cd build
    cmake -G "Unix Makefiles" --build ..
    make -j `nproc`
    ~~~~
-
 
 2. Optionally, install ScanTailor Advanced with:
 
@@ -341,9 +289,7 @@ or [build them from sources](#building-from-sources).
 
 Packaging
 ---------
-
 1. Build ScanTailor Advanced following the instructions above  
-
 2. Use `cpack -G <generator> [options]` to create a package for your platform.  
    Enter `cpack --help` to see the options and generators available.
 
