@@ -95,8 +95,9 @@ endif()
 set(BOOST_INSTALL_DIR "${SOURCE_OUTER_DIR}/Boost" CACHE PATH "Boost installation directory.")
 set(QT_INSTALL_DIR "${SOURCE_OUTER_DIR}/Qt" CACHE PATH "Qt installation directory.")
 
-set(QT_MODULES_TO_BUILD qtbase qttools qtimageformats qtsvg
+set(QT_MODULES_TO_BUILD qtbase qttools qtsvg
     CACHE STRING "Qt modules to build (empty to build all).")
+string(REPLACE " " ";" QT_MODULES_TO_BUILD "${QT_MODULES_TO_BUILD}")
 
 #=================================== JPEG ===================================#
 
