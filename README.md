@@ -31,6 +31,7 @@ This is an instruction for building ScanTailor Advanced and its dependencies for
        * [Downloading from repositories](#linux-downloading-from-repositories)
        * [Building from sources](#linux-building-from-sources)
     2. [Building ScanTailor](#linux-building-scantailor)
+  * [**macOS**](#macos)
 * [Packaging](#packaging)
 
 Dependencies
@@ -287,6 +288,9 @@ or [build them from sources](#building-from-sources).
    ~~~~
 
    >***Note***: you can use `sudo make uninstall` from the build dir to uninstall ScanTailor Advanced later.
+
+### macOS
+Use this repository: https://github.com/yb85/scantailor-advanced-osx
 
 Packaging
 ---------
