@@ -36,16 +36,16 @@ This is an instruction for building ScanTailor Advanced and its dependencies for
 
 Dependencies
 ------------
-1. [Boost 1.60.x or higher](http://www.boost.org/)
-2. [libpng 1.x.x](https://sourceforge.net/projects/libpng/files/)
-3. [zlib 1.x.x](https://sourceforge.net/projects/libpng/files/zlib/)
-4. [jpeg 9x](http://www.ijg.org/files/)
-5. [libtiff 4.x.x](http://www.simplesystems.org/libtiff/)
-6. [Qt 5.6.x or higher](https://download.qt.io/archive/qt/) (Note: Qt 5.6.x are the latest versions that support Windows XP)
+1. [Boost](http://www.boost.org/) (>= 1.60)
+2. [libpng](https://sourceforge.net/projects/libpng/files/)
+3. [zlib](https://sourceforge.net/projects/libpng/files/zlib/)
+4. [jpeg](http://www.ijg.org/files/)
+5. [libtiff](http://www.simplesystems.org/libtiff/)
+6. [Qt](https://download.qt.io/archive/qt/) (>= 5.6) (Note: Qt 5.6.x are the latest versions that support Windows XP)
 
 Tools
 -----
-1. [CMake 3.9.x or higher](https://cmake.org/download/)
+1. [CMake](https://cmake.org/download/)
 
 ScanTailor building options
 -----
@@ -131,7 +131,7 @@ Supported toolchains for Windows are MinGW and MSVC.
 
 #### <a name="windows-building-with-msvc"></a> <u>Building with MSVC</u>
 #### <a name="windows-msvc-tools"></a> Tools
-1. [Visual Studio](https://www.visualstudio.com/) (version 2015 or higher \[with the Win XP compability package\] required)
+1. [Visual Studio](https://www.visualstudio.com/) (version 2017 or higher \[with the Win XP compability package\] required)
 2. [Jom](http://wiki.qt.io/Jom)
 
 #### <a name="windows-msvc-preparing-tools"></a> Preparing tools
@@ -269,7 +269,7 @@ or [build them from sources](#building-from-sources).
    mkdir build
    ./bootstrap.sh
    ./b2 --build-dir=build -q --with-test toolset=gcc link=shared threading=multi -j `nproc` stage
-   sudo ./b2 -q --with-test toolset=gcc link=shared threading=multi install
+   sudo ./b2 --build-dir=build -q --with-test toolset=gcc link=shared threading=multi install
    ~~~~
 
 #### <a name="linux-building-scantailor"></a> Building ScanTailor
@@ -295,8 +295,10 @@ Use this repository: https://github.com/yb85/scantailor-advanced-osx
 Packaging
 ---------
 1. Build ScanTailor Advanced following the instructions above  
-2. Use `cpack -G <generator> [options]` to create a package for your platform.  
-   Enter `cpack --help` to see the options and generators available.
+2. Use `cpack -G <generator> [-D <var>=<value> ...]` to create the package for your platform.  
+
+   Enter `cpack --help` to see the options and generators available.  
+   See the list of available variables for each generator [here](https://cmake.org/cmake/help/latest/manual/cpack-generators.7.html).
 
    Examples:
      1. To create a Linux DEB package use: `cpack -G "DEB"`  
