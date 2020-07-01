@@ -208,7 +208,7 @@ or [build them from sources](#building-from-sources).
    Examples:  
    <details><summary><i>Ubuntu</i></summary>
    <code>
-   sudo apt-get install gcc-7 g++-7 cmake libjpeg-dev libpng-dev libtiff5 libtiff5-dev libboost-test1.67-dev libboost-test1.67.0 qtbase5-dev libqt5svg5-dev qttools5-dev qttools5-dev-tools libqt5opengl5-dev libpthread-stubs0-dev
+   sudo apt-get install build-essential cmake libjpeg-dev libpng-dev libtiff5 libtiff5-dev libboost-test1.67-dev libboost-test1.67.0 qtbase5-dev libqt5svg5-dev qttools5-dev qttools5-dev-tools libqt5opengl5-dev libpthread-stubs0-dev
    </code>
    </details>
    <details><summary><i>OpenSUSE</i></summary>
