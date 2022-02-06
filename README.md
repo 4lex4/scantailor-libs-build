@@ -45,7 +45,7 @@ Dependencies
 
 Tools
 -----
-1. [CMake](https://cmake.org/download/)
+1. [CMake](https://cmake.org/download/) (<= 3.19.8)
 
 ScanTailor building options
 -----
@@ -88,7 +88,7 @@ Supported toolchains for Windows are MinGW and MSVC.
     |
    ~~~~
 
-7. Install [CMake] (<= 3.19.8)(#tools)
+7. Install [CMake](#tools)
 
 #### <a name="windows-building-with-mingw"></a> <u>Building with MinGW</u>
 #### <a name="windows-mingw-tools"></a> Tools
