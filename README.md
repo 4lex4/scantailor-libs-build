@@ -40,8 +40,8 @@ Dependencies
 2. [libpng](https://sourceforge.net/projects/libpng/files/)
 3. [zlib](https://sourceforge.net/projects/libpng/files/zlib/)
 4. [jpeg](http://www.ijg.org/files/)
-5. [libtiff](http://www.simplesystems.org/libtiff/)
-6. [Qt](https://download.qt.io/archive/qt/) (>= 5.6) (Note: Qt 5.6.x are the latest versions that support Windows XP)
+5. [libtiff](http://www.simplesystems.org/libtiff/) (<= 4.2)
+6. [Qt](https://download.qt.io/archive/qt/) (>= 5.6 && < 6) (Note: Qt 5.6.x are the latest versions that support Windows XP)
 
 Tools
 -----
@@ -81,14 +81,14 @@ Supported toolchains for Windows are MinGW and MSVC.
     |   |-- scantailor-libs-build-master
     |   |-- jpeg-9x
     |   |-- qt-everywhere-opensource-src-5.x.x
-    |   |-- tiff-4.x.x
+    |   |-- tiff-4.2.x
     |   |-- zlib-1.x.x
     |   
     |-- scantailor-advanced-x.x.x
     |
    ~~~~
 
-7. Install [CMake](#tools)
+7. Install [CMake] (<= 3.19.8)(#tools)
 
 #### <a name="windows-building-with-mingw"></a> <u>Building with MinGW</u>
 #### <a name="windows-mingw-tools"></a> Tools
