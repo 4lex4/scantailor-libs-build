@@ -1,7 +1,7 @@
 Building ScanTailor Advanced and its dependencies
 =================================================
 
-ScanTailor Advanced: https://github.com/4lex4/scantailor-advanced
+ScanTailor Advanced: https://github.com/vigri/scantailor-advanced
 
 This is an instruction for building ScanTailor Advanced and its dependencies for **Windows** and **Linux**. 
 
@@ -63,8 +63,8 @@ Instructions
 Supported toolchains for Windows are MinGW and MSVC.
 
 #### <a name="windows-preparing-to-building"></a> <u>Preparing to building</u>
-1. Download the sources of [ScanTailor Advanced](https://github.com/4lex4/scantailor-advanced/releases/)
-2. Clone [this project](https://github.com/4lex4/scantailor-libs-build). (Push the 'Clone or download' button above)
+1. Download the sources of [ScanTailor Advanced](https://github.com/vigri/scantailor-advanced/releases/)
+2. Clone [this project](https://github.com/viri/scantailor-libs-build). (Push the 'Clone or download' button above)
 3. Unpack ScanTailor Advanced sources into a folder
 4. Create the empty folder named `libs` near the ScanTailor sources folder (but not inside)
 5. Download and unpack the sources of all [the dependencies](#dependencies) listed into the libs folder
