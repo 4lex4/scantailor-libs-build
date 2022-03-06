@@ -1,3 +1,9 @@
+---
+title: README
+created: '2022-03-06T08:35:04.797Z'
+modified: '2022-03-06T14:42:38.699Z'
+---
+
 Building ScanTailor Advanced and its dependencies
 =================================================
 
@@ -6,10 +12,10 @@ ScanTailor Advanced: https://github.com/vigri/scantailor-advanced
 This is an instruction for building ScanTailor Advanced and its dependencies for **Windows** and **Linux**. 
 
 #### <u>Contents</u>:
-* [Dependencies](#dependencies)
-* [Tools](#tools)
 * [ScanTailor building options](#scantailor-building-options)
-* [Instructions](#instructions)
+* [Build instructions for Qt 5](#build-instructions-for-qt-5)
+  * [Dependencies](#dependencies)
+  * [Tools](#tools)
   * [**Windows**](#windows)
     * [Preparing to building](#windows-preparing-to-building)
     * [Building with MinGW](#windows-building-with-mingw)
@@ -32,20 +38,17 @@ This is an instruction for building ScanTailor Advanced and its dependencies for
        * [Building from sources](#linux-building-from-sources)
     2. [Building ScanTailor](#linux-building-scantailor)
   * [**macOS**](#macos)
+* [Build instructions for Qt 6](#build-instructions-for-qt-6)
+  * [Dependencies](#qt6-dependencies)
+  * [Tools](#qt6-tools)
+  * [**Windows**](#qt6-windows)
+    * [Using libraries form Strawberry Perl (MinGW only)](#qt6-strawberry)
+    * [Setting up the toolchain CLI](#qt6-cli-setup)
+    * [Building Boost](#qt6-boost)
+    * [Building other libraries](#qt6-other-libs)
+    * [Building Scantailor](#qt6-scantailor)
+  * [**Linux**](#qt6-linux)
 * [Packaging](#packaging)
-
-Dependencies
-------------
-1. [Boost](http://www.boost.org/) (>= 1.60)
-2. [libpng](https://sourceforge.net/projects/libpng/files/)
-3. [zlib](https://sourceforge.net/projects/libpng/files/zlib/)
-4. [jpeg](http://www.ijg.org/files/)
-5. [libtiff](http://www.simplesystems.org/libtiff/) (<= 4.2)
-6. [Qt](https://download.qt.io/archive/qt/) (>= 5.6 && < 6) (Note: Qt 5.6.x are the latest versions that support Windows XP)
-
-Tools
------
-1. [CMake](https://cmake.org/download/) (<= 3.19.8)
 
 ScanTailor building options
 -----
@@ -57,8 +60,20 @@ Useful options:
     and files inside the application folder if possible, else ScanTailor stores those in the system specific paths. 
     If disabled, the settings and files are always stored in the system specific paths.  
 
-Instructions
+Build instructions for Qt 5
 ----------
+
+### Dependencies
+1. [Boost](http://www.boost.org/) (>= 1.60)
+2. [libpng](https://sourceforge.net/projects/libpng/files/)
+3. [zlib](https://sourceforge.net/projects/libpng/files/zlib/)
+4. [jpeg](http://www.ijg.org/files/)
+5. [libtiff](http://www.simplesystems.org/libtiff/) (<= 4.2)
+6. [Qt](https://download.qt.io/archive/qt/) (>= 5.6) (Note: Qt 5.6.x are the latest versions that support Windows XP; only Qt 5.9 was tested with the last version scantailor-advanced)
+
+### Tools
+1. [CMake](https://cmake.org/download/) (<= 3.19.8)
+
 ### Windows
 Supported toolchains for Windows are MinGW and MSVC.
 
@@ -291,6 +306,144 @@ or [build them from sources](#building-from-sources).
 
 ### macOS
 Use this repository: https://github.com/yb85/scantailor-advanced-osx
+
+Build instructions for Qt 6
+----------
+
+Unfortunately, this project does not support the build of scantailor-advanced with Qt6 yet. It is however possible to build it from the command line, starting with a precompiled version of Qt.
+
+<h3 id="qt6-dependencies">Dependencies</h3>
+
+1. [Boost](http://www.boost.org/) (>= 1.60)
+2. [libpng](https://sourceforge.net/projects/libpng/files/)
+3. [zlib](https://sourceforge.net/projects/libpng/files/zlib/)
+4. [jpeg](http://www.ijg.org/files/) or [libjpeg-turbo](https://sourceforge.net/projects/libjpeg-turbo/files/)
+5. [libtiff](http://www.simplesystems.org/libtiff/)
+6. [Qt](https://download.qt.io/official_releases/online_installers/) (>= 6, in binary form), with the corresponding MinGW toolchain if one plans to use MinGW. The toolchain can be installed alongside Qt in the `Tools` section.
+7. If using libjpeg-turbo under Windows, [NASM](https://nasm.us/). This is not strictly required but enables to produce faster code.
+
+<h3 id="qt6-tools">Tools</h3>
+
+1. [CMake](https://cmake.org/download/) (>= 3.9)
+
+<h3 id="qt6-windows">Windows</h3>
+
+Supported toolchains for Windows are MinGW and MSVC. A precompiled version of Qt must be installed, with a compiler matching the selected toolchain. In the MinGW case, it is advised to use the MinGW GCC compiler shipped with Qt.
+
+<h4 id="qt6-strawberry">Using libraries form Strawberry Perl (MinGW only)</h4>
+
+When using the MinGW toolchain, `libpng`, `zlib`, `libjeg` and `libtiff` can be obtained in compiled form from an installation of [Strawberry Perl](https://strawberryperl.com/). If Strawberry Perl binaries are in your PATH, CMake will be able to locate the libraries with no additional effort.
+
+<h4 id="qt6-cli-setup">Setting up the toolchain CLI</h4>
+
+In a CMD command prompt, set up the following variables:
+  * set `QT_BASE` to the base directory of installed Qt versions. e.g. `set QT_BASE=C:\Qt`.
+  * set `QT_DIR` to the Qt binary tree you wish to use. For instance, `set QT_DIR=%QT_BASE%\6.2.3\mingw_64` if using QT 6.2.3 with the MinGW toolchain; or `set QT_DIR=%QT_BASE%\6.2.3\msvc2019_64` for the MSVC version.
+
+Set up the toolchain:
+  * for MSVC, locate the `vcvars64.bat` script relevant to your installation and run it: e.g. run `"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat"`
+  * for MinGW, add the MinGW binary directory to your PATH:  e.g. `set PATH=%QT_BASE%\Tools\mingw900_64\bin;%PATH%`
+
+Ensure that the `Ninja` build tool is also in your `PATH`. It is provided with Qt, and can be added to the `PATH` by `set PATH=%QT_BASE%\Tools\Ninja;%PATH%`.
+
+<h4 id="qt6-boost">Building Boost</h4>
+
+set `BOOST_SRC_DIR` to the location Boost sources; e.g. `set BOOST_SRC_DIR=C:\boost_1_78_0`
+
+Depending on the toochain selected, build Boost with MSVC,
+  ~~~~
+cd %BOOST_SRC_DIR%
+boostrap.bat msvc
+b2 toolset=msvc
+  ~~~~
+
+or build boost with MinGW gcc:
+  ~~~~
+cd %BOOST_SRC_DIR%
+boostrap.bat gcc
+b2 toolset=gcc
+  ~~~~
+
+<h4 id="qt6-other-libs">Building other libraries</h4>
+
+This works both with MinGW and MSVC, but can be avoided using libraries of Strawberry Perl in the MinGW case (see above)
+
+  * Set variables defining `zlib`, `libtiff`, `libjpeg`, `libpng` source directories:
+  ~~~~~~
+set ZLIB_SRC_DIR=...
+set LIBTIFF_SRC_DIR=...
+set LIBJPEG_SRC_DIR=...
+set LIBPNG_SRC_DIR=...
+  ~~~~~~
+
+  * Set up a temporary directory `TMP_DIR` where libraries will be built: e.g. `TMP_DIR=%TEMP%`
+  * Set up a directory where libraries will be installed for use by the `scantailor-advanced` build process: e.g. `LIB_DIR=C:\lib_install`.
+
+  * Build and install `zlib`
+  ~~~~~~
+cmake -GNinja -S "%ZLIB_SRC_DIR%" -B "%TMP_DIR%\build_zlib_release" -D CMAKE_INSTALL_PREFIX="%LIB_DIR%"
+cmake --build "%TMP_DIR%\build_zlib_release" --config Release
+cmake --install "%TMP_DIR%\build_zlib_release"
+  ~~~~~~
+
+  * Build and install `libpng`
+  ~~~~~~
+cmake -GNinja -S "%LIBPNG_SRC_DIR%" -B "%TMP_DIR%\build_libpng_release" -D CMAKE_PREFIX_PATH="%LIB_DIR%" 
+cmake --build "%TMP_DIR%\build_libpng_release" --config Release
+cmake --install "%TMP_DIR%\build_libpng_release" --prefix "%LIB_DIR%"
+  ~~~~~~
+
+  * Build and install `libtiff`
+  ~~~~~~
+cmake -GNinja -S "%LIBTIFF_SRC_DIR%" -B "%TMP_DIR%\build_libtiff_release" -D CMAKE_PREFIX_PATH="%LIB_DIR%"  -D CMAKE_INSTALL_PREFIX="%LIB_DIR%"
+cmake --build "%TMP_DIR%\build_libtiff_release" --config Release
+cmake --install "%TMP_DIR%\build_libtiff_release" 
+  ~~~~~~
+
+  * Build and install `libjpeg` or `libjpeg-turbo`. Here commands are given for `libjpeg-turbo`, which has a `CMakeFile.txt`. `libjpeg` build instructions can be found as part of the scantailor Qt5 build instructions above.
+  ~~~~~~
+cmake -GNinja -S "%LIBJPEG_SRC_DIR%" -B "%TMP_DIR%\build_libjpeg_release" -D CMAKE_PREFIX_PATH="%LIB_DIR%"
+cmake --build "%TMP_DIR%\build_libjpeg_release" --config Release
+cmake --install "%TMP_DIR%\build_libjpeg_release" --prefix="%LIB_DIR%"
+  ~~~~~~
+
+<h4 id="qt6-scantailor">Building Scantailor</h4>
+
+  Set `SCANTAILOR_SOURCE_DIR` and `SCANTAILOR_INSTALL_DIR` to the source and installation directory for scantailor, respectively:
+  ~~~~~~
+set SCANTAILOR_SOURCE_DIR=...
+set SCANTAILOR_INSTALL_DIR=...
+  ~~~~~~
+  Perform the build with:
+  ~~~~~~
+    cmake -GNinja -S "%SCANTAILOR_SOURCE_DIR%" -B "%TMP_DIR%\build_scantailor-advanced_release" -DCMAKE_PREFIX_PATH="%QT_DIR%";"%BOOST_SRC_DIR%";"%LIB_DIR%" -DCMAKE_BUILD_TYPE=Release
+    cmake --build "%TMP_DIR%\build_scantailor-advanced_release"
+    cmake --install "%TMP_DIR%\build_scantailor-advanced_release" --prefix "%SCANTAILOR_INSTALL_DIR%"
+  ~~~~~~
+
+  * All directories used can be removed, except `SCANTAILOR_INSTALL_DIR`.
+
+<h3 id="qt6-linux">Linux</h3>
+
+The installation of `zlib`, `libtiff`, `libjpeg`, `libpng` and `Boost` are performed as in the Qt5 case, either from your distribution packages or from source. If a version of Qt6 is shipped with your distribution, it is enough to install it (both the binary and development packages) and perform the build with
+
+  ~~~~~~
+    cmake -GNinja -S "$SCANTAILOR_SOURCE_DIR" -B "$TMP_DIR\build_scantailor-advanced_release" -DCMAKE_BUILD_TYPE=Release
+    cmake --build "$TMP_DIR\build_scantailor-advanced_release"
+    cmake --install "$TMP_DIR\build_scantailor-advanced_release" --prefix "$SCANTAILOR_INSTALL_DIR"
+  ~~~~~~
+
+  With `SCANTAILOR_SOURCE_DIR` and `SCANTAILOR_INSTALL_DIR` set to the source and installation directory for scantailor, respectively; and `TMP_DIR` set to some working directory.
+
+  If the compiled version of Qt6 that one wishes to use sits in a non-standard location, it should be given to CMake as in the example below: 
+
+  ~~~~~~
+    QT_DIR=/mnt/data/Qt/6.2.3/gcc_64
+    cmake -GNinja -S "$SCANTAILOR_SOURCE_DIR" -B "$TMP_DIR\build_scantailor-advanced_release" -DCMAKE_PREFIX_PATH="$QT_DIR" -DCMAKE_BUILD_TYPE=Release
+  ~~~~~~
+
+  The build and install steps are unchanged.
+
 
 Packaging
 ---------
