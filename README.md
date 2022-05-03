@@ -312,6 +312,8 @@ Build instructions for Qt 6
 
 Unfortunately, this project does not support the build of scantailor-advanced with Qt6 yet. It is however possible to build it from the command line, starting with a precompiled version of Qt.
 
+Please note, that Qt 6 doesn't support Windows 7.
+
 <h3 id="qt6-dependencies">Dependencies</h3>
 
 1. [Boost](http://www.boost.org/) (>= 1.60)
