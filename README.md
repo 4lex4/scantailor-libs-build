@@ -383,29 +383,29 @@ set LIBPNG_SRC_DIR=...
 
   * Build and install `zlib`
   ~~~~~~
-cmake -GNinja -S "%ZLIB_SRC_DIR%" -B "%TMP_DIR%\build_zlib_release" -D CMAKE_INSTALL_PREFIX="%LIB_DIR%"
-cmake --build "%TMP_DIR%\build_zlib_release" --config Release
+cmake -GNinja -S "%ZLIB_SRC_DIR%" -B "%TMP_DIR%\build_zlib_release" -D CMAKE_INSTALL_PREFIX="%LIB_DIR%" -D CMAKE_BUILD_TYPE=Release
+cmake --build "%TMP_DIR%\build_zlib_release" 
 cmake --install "%TMP_DIR%\build_zlib_release"
   ~~~~~~
 
   * Build and install `libpng`
   ~~~~~~
-cmake -GNinja -S "%LIBPNG_SRC_DIR%" -B "%TMP_DIR%\build_libpng_release" -D CMAKE_PREFIX_PATH="%LIB_DIR%" 
-cmake --build "%TMP_DIR%\build_libpng_release" --config Release
+cmake -GNinja -S "%LIBPNG_SRC_DIR%" -B "%TMP_DIR%\build_libpng_release" -D CMAKE_PREFIX_PATH="%LIB_DIR%" -D CMAKE_BUILD_TYPE=Release
+cmake --build "%TMP_DIR%\build_libpng_release" 
 cmake --install "%TMP_DIR%\build_libpng_release" --prefix "%LIB_DIR%"
   ~~~~~~
 
   * Build and install `libtiff`
   ~~~~~~
-cmake -GNinja -S "%LIBTIFF_SRC_DIR%" -B "%TMP_DIR%\build_libtiff_release" -D CMAKE_PREFIX_PATH="%LIB_DIR%"  -D CMAKE_INSTALL_PREFIX="%LIB_DIR%"
-cmake --build "%TMP_DIR%\build_libtiff_release" --config Release
+cmake -GNinja -S "%LIBTIFF_SRC_DIR%" -B "%TMP_DIR%\build_libtiff_release" -D CMAKE_PREFIX_PATH="%LIB_DIR%"  -D CMAKE_INSTALL_PREFIX="%LIB_DIR%" -D CMAKE_BUILD_TYPE=Release
+cmake --build "%TMP_DIR%\build_libtiff_release" 
 cmake --install "%TMP_DIR%\build_libtiff_release" 
   ~~~~~~
 
   * Build and install `libjpeg` or `libjpeg-turbo`. Here commands are given for `libjpeg-turbo`, which has a `CMakeFile.txt`. `libjpeg` build instructions can be found as part of the scantailor Qt5 build instructions above.
   ~~~~~~
-cmake -GNinja -S "%LIBJPEG_SRC_DIR%" -B "%TMP_DIR%\build_libjpeg_release" -D CMAKE_PREFIX_PATH="%LIB_DIR%"
-cmake --build "%TMP_DIR%\build_libjpeg_release" --config Release
+cmake -GNinja -S "%LIBJPEG_SRC_DIR%" -B "%TMP_DIR%\build_libjpeg_release" -D CMAKE_PREFIX_PATH="%LIB_DIR%" -D CMAKE_BUILD_TYPE=Release
+cmake --build "%TMP_DIR%\build_libjpeg_release"
 cmake --install "%TMP_DIR%\build_libjpeg_release" --prefix="%LIB_DIR%"
   ~~~~~~
 
