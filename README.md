@@ -1,23 +1,17 @@
----
-title: README
-created: '2022-03-06T08:35:04.797Z'
-modified: '2022-03-06T14:42:38.699Z'
----
-
-Building ScanTailor Advanced and its dependencies
+# Building ScanTailor Advanced and its dependencies
 =================================================
 
-ScanTailor Advanced: https://github.com/vigri/scantailor-advanced
+ScanTailor Advanced: https://github.com/ScanTailor-Advanced/scantailor-advanced
 
 This is an instruction for building ScanTailor Advanced and its dependencies for **Windows** and **Linux**. 
 
-#### <u>Contents</u>:
+## <u>Contents</u>:
 * [ScanTailor building options](#scantailor-building-options)
 * [Build instructions for Qt 5](#build-instructions-for-qt-5)
   * [Dependencies](#dependencies)
   * [Tools](#tools)
   * [**Windows**](#windows)
-    * [Preparing to building](#windows-preparing-to-building)
+    * [Preparing to building](#windows-preparing-to-build)
     * [Building with MinGW](#windows-building-with-mingw)
       * [Tools](#windows-mingw-tools)
       * [Preparing tools](#windows-mingw-preparing-tools)
@@ -29,9 +23,6 @@ This is an instruction for building ScanTailor Advanced and its dependencies for
       * [Building for Windows 7 and higher](#windows-msvc-building-for-windows-7-and-higher)
         1. [Building dependencies](#windows-msvc-building-dependencies)
         2. [Building ScanTailor](#windows-msvc-building-scantailor)
-      * [Building for Windows XP](#windows-msvc-building-for-windows-xp)
-        1. [Building dependencies](#windows-msvc-winxp-building-dependencies)
-        2. [Building ScanTailor](#windows-msvc-winxp-building-scantailor)
   * [**Linux**](#linux)
     1. [Getting dependencies](#linux-getting-dependencies)
        * [Downloading from repositories](#linux-downloading-from-repositories)
@@ -50,7 +41,7 @@ This is an instruction for building ScanTailor Advanced and its dependencies for
   * [**Linux**](#qt6-linux)
 * [Packaging](#packaging)
 
-ScanTailor building options
+## ScanTailor building options
 -----
 Usage: `cmake -D <option>=<value> ...`
 
@@ -60,7 +51,7 @@ Useful options:
     and files inside the application folder if possible, else ScanTailor stores those in the system specific paths. 
     If disabled, the settings and files are always stored in the system specific paths.  
 
-Build instructions for Qt 5
+## Build instructions for Qt 5
 ----------
 
 ### Dependencies
@@ -69,7 +60,7 @@ Build instructions for Qt 5
 3. [zlib](https://sourceforge.net/projects/libpng/files/zlib/)
 4. [jpeg](http://www.ijg.org/files/)
 5. [libtiff](http://www.simplesystems.org/libtiff/) (<= 4.2)
-6. [Qt](https://download.qt.io/archive/qt/) (>= 5.6) (Note: Qt 5.6.x are the latest versions that support Windows XP; only Qt 5.9 was tested with the last version scantailor-advanced)
+6. [Qt](https://download.qt.io/archive/qt/) (>= 5.6)
 
 ### Tools
 1. [CMake](https://cmake.org/download/) (<= 3.19.8)
@@ -77,14 +68,14 @@ Build instructions for Qt 5
 ### Windows
 Supported toolchains for Windows are MinGW and MSVC.
 
-#### <a name="windows-preparing-to-building"></a> <u>Preparing to building</u>
-1. Download the sources of [ScanTailor Advanced](https://github.com/vigri/scantailor-advanced/releases/)
-2. Clone [this project](https://github.com/viri/scantailor-libs-build). (Push the 'Clone or download' button above)
+#### <a name="windows-preparing-to-build"></a> <u>Preparing to build</u>
+1. Download the sources of [ScanTailor Advanced](https://github.com/ScanTailor-Advanced/scantailor-advanced/releases/)
+2. Clone [this project](https://github.com/ScanTailor-Advanced/scantailor-libs-build). (Push the 'Clone or download' button above)
 3. Unpack ScanTailor Advanced sources into a folder
 4. Create the empty folder named `libs` near the ScanTailor sources folder (but not inside)
 5. Download and unpack the sources of all [the dependencies](#dependencies) listed into the libs folder
 6. Unpack the folder of this project there.  
-   You must have gotten a catalog structure similar to this:
+   You should have gotten a folder structure similar to this:
 
    ~~~~
    ..\
@@ -109,13 +100,13 @@ Supported toolchains for Windows are MinGW and MSVC.
 #### <a name="windows-mingw-tools"></a> Tools
 1. [MinGW-w64](https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/)
    (for 32 and 64 bit Windows; `posix` and `dwarf` / `seh` versions recommended)
-2. [msys2](http://www.msys2.org/)
+2. [MSYS2](http://www.msys2.org/)
 
 #### <a name="windows-mingw-preparing-tools"></a> Preparing tools
-1. Install mingw64 into the path `C:\mingw64` / `C:\mingw32`
-2. Install msys2 into the path `C:\msys64` / `C:\msys32`
-3. Run script `configure_msys.bat` with administrative permissions 
-4. Add mingw into the `PATH` environment variable:  
+1. Install MinGW64 into the path `C:\mingw64` / `C:\mingw32`
+2. Install MSYS2 into the path `C:\msys64` / `C:\msys32`
+3. Run script `configure_msys.bat` with administrative permissions
+4. Add MinGW into the `PATH` environment variable:  
    1. Go to: My Computer -> Right click -> Properties -> Advanced system settings  
    2. Click Environment variables  
    3. Find `Path` variable in the system variables tab and paste
@@ -123,7 +114,7 @@ Supported toolchains for Windows are MinGW and MSVC.
 
 #### <a name="windows-mingw-building-dependencies"></a> Building dependencies 
 1. Run script `configure_libs_x32.bat` / `configure_libs_x64.bat`
-2. Open the command prompt (`cmd`), navigate to the `scantailor-libs-build-master`
+2. Open the command prompt (`cmd`), navigate to the `scantailor-libs-build`
    directory (`cd /d "<dir>"`) and enter:
 
    ~~~~
@@ -180,37 +171,6 @@ Supported toolchains for Windows are MinGW and MSVC.
    jom -j %NUMBER_OF_PROCESSORS%
    ~~~~
 
-#### <a name="windows-msvc-building-for-windows-xp"></a> *<u>Building for Windows XP</u>*
-#### <a name="windows-msvc-winxp-building-dependencies"></a> Building dependencies
-1. <a name="configure-environment-msvc-winxp"></a> 
-   Configure some environment variables. Open the Native Tools Command Prompt for VS and enter:
-
-   ~~~~
-   set INCLUDE=%ProgramFiles(x86)%\Microsoft SDKs\Windows\v7.1A\Include;%INCLUDE%
-   set PATH=%ProgramFiles(x86)%\Microsoft SDKs\Windows\v7.1A\Bin;%PATH%
-   set LIB=%ProgramFiles(x86)%\Microsoft SDKs\Windows\v7.1A\Lib;%LIB%
-   ~~~~
-
-2. Navigate to the `scantailor-libs-build-master` directory (`cd /d "<dir>"`) and enter:
-
-   ~~~~
-   mkdir build & cd build
-   cmake -G "NMake Makefiles JOM" -D CMAKE_BUILD_TYPE=Release -D WIN_XP=ON --build ..
-   jom -j %NUMBER_OF_PROCESSORS%
-   ~~~~
-
->***Note**: when building successfully done the `qt-everywhere-opensource-src-5.x.x` and `boost_1_xx_x` folders can be removed to free up disk space.*
-
-#### <a name="windows-msvc-winxp-building-scantailor"></a> Building ScanTailor
-1. Configure some environment variables [as stated above](#configure-environment-msvc-winxp), if it has not been done yet
-2. Navigate to the `scantailor-advanced-x.x.x` directory (`cd /d "<dir>"`) and enter:
-
-   ~~~~
-   mkdir build & cd build
-   cmake -G "NMake Makefiles JOM" -D CMAKE_BUILD_TYPE=Release -D WIN_XP=ON --build ..
-   jom -j %NUMBER_OF_PROCESSORS%
-   ~~~~
-
 ### Linux
 #### <a name="linux-getting-dependencies"></a> Getting dependencies
 Linux users have two options here: [download them from their repositories](#downloading-from-repositories) 
@@ -221,9 +181,9 @@ or [build them from sources](#building-from-sources).
    then [build scantailor](#build-scantailor-linux). Developing packages are usually have `-devel` or `-dev` suffix  
 
    Examples:  
-   <details><summary><i>Ubuntu</i></summary>
+   <details><summary><i>Debian/Ubuntu</i></summary>
    <code>
-   sudo apt-get install gcc-7 g++-7 cmake libjpeg-dev libpng-dev libtiff5 libtiff5-dev libboost-test1.63-dev libboost-test1.63.0 qtbase5-dev libqt5svg5-dev qttools5-dev qttools5-dev-tools libqt5opengl5-dev libpthread-stubs0-dev
+   sudo apt install gcc g++ cmake libjpeg-dev libpng-dev libtiff5 libtiff5-dev libboost-test-dev qtbase5-dev libqt5svg5-dev qttools5-dev qttools5-dev-tools libqt5opengl5-dev libpthread-stubs0-dev
    </code>
    </details>
    <details><summary><i>OpenSUSE</i></summary>
