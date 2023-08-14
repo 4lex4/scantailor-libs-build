@@ -251,9 +251,10 @@ or [build them from sources](#building-from-sources).
 1. Navigate to the `scantailor-advanced-x.x.x` directory (`cd "<dir>"`) and enter:
 
    ~~~~
-   mkdir build; cd build
-   cmake -G "Unix Makefiles" --build ..
-   make -j `nproc`
+   mkdir build
+   cd build
+   cmake ..
+   cmake --build .
    ~~~~
 
 2. Optionally, install ScanTailor Advanced with:
